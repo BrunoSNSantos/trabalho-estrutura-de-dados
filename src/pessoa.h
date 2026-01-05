@@ -33,4 +33,8 @@ pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo);
 int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados);
 int remover_pessoa(pessoa_lista *lista, int dados);
 
+int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo);
+int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo);
+
+
 #endif 
