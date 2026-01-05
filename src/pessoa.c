@@ -58,9 +58,24 @@ pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo) {
 }
 
 int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
-
+    pessoa_no *n = buscar_pessoa(lista, dados.codigo);
+    if (!n) return -1;
+    n->data = dados;
+    return 0;
 }
 
 int remover_pessoa(pessoa_lista *lista, int codigo) {
-    
+    pessoa_no *n = buscar_pessoa(lista, codigo);
+    if (!n == NULL) return -1;
+    //checando se n está no meio da lista
+    if (n->ant) n->ant->prox = n->prox;
+    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
+
+    if (n->prox) n->prox->ant = n->ant;
+    else lista->cauda = n->prox;
+
+    free(n);
+    lista->tam--;
+
+    return 0;
 }
