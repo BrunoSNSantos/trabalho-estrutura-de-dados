@@ -46,7 +46,15 @@ int criar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
 }
 
 pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo) {
+    if (!lista) return NULL;
+    pessoa_no *auxp = lista->cabeca;
 
+    while(auxp) {
+        auxp = auxp->prox;
+    }
+    if (auxp->data.codigo == codigo) return auxp;
+
+    return NULL;
 }
 
 int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
