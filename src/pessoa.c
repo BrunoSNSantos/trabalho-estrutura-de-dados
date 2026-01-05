@@ -23,7 +23,25 @@ void liberar_pessoa_lista(pessoa_lista *lista) {
     }
 }
 
+static pessoa_no* criar_no(pessoa_dados *d) {
+    pessoa_no *no = (pessoa_no*)malloc(sizeof(pessoa_no));
+    no->data = *d;
+    no->ant = no->prox = NULL;
+    return no; 
+}
+
 int criar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
+    if (!lista) return -1;
+    pessoa_no *n = criar_no(&dados);
+    if (lista->cauda == NULL) {
+        lista->cabeca = lista->cauda = n;
+    } else {
+        lista->cauda->prox = n;
+        n->ant = lista->cauda;
+        lista->cauda = n;
+    }
+    lista->tam++;
+    return 0;
 
 }
 
