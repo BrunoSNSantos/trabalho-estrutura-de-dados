@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "pessoa.h"
 #define max 10
 
@@ -77,5 +78,44 @@ int remover_pessoa(pessoa_lista *lista, int codigo) {
     free(n);
     lista->tam--;
 
+    return 0;
+}
+
+int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
+    if (!lista || !nome_arquivo) return -1;
+
+    FILE *f = fopen(nome_arquivo, "r");
+    if (!f) return -1;
+
+    char line[512];
+    while (fgets(line, sizeof(line), f)) {
+        if(line[0] == "\0") continue;
+        pessoa_dados d = {0};
+
+        //campo codigo
+        char *tok = strtok(line, ";");
+        if (!tok) continue;
+        d.codigo = atoi(tok);
+
+        //campo nome
+        tok = strtok(NULL, ";");
+        if (tok) strncpy(d.nome, tok, max-1);
+
+        //campo fone
+        tok = strtok(NULL, ";");
+        if (tok) strncpy(d.fone, tok, max-1);
+
+        //campo endereco
+        tok = strtok(NULL, ";");
+        if (tok) strncpy(d.endereco, tok, max-1);
+
+        //campo data_nascimento
+        tok = strtok(NULL, ";");
+        if (tok) strncpy(d.data_nascimento, tok, max-1);
+
+        criar_pessoa(lista, d);
+    }
+
+    fclose(f);
     return 0;
 }
