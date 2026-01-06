@@ -89,7 +89,9 @@ int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
 
     char line[512];
     while (fgets(line, sizeof(line), f)) {
-        if(line[0] == "\0") continue;
+        line[strcspn(line, "\n")] = '\0';
+        if(line[0] == '\0') continue;
+
         pessoa_dados d = {0};
 
         //campo codigo
