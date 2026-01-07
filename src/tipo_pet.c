@@ -72,3 +72,19 @@ int atualizar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados) {
 
     return 0;
 }
+
+int remover_tipo_pet(tipo_pet_lista *lista, int codigo) {
+    tipo_pet_no *n = buscar_tipo_pet(lista, codigo);
+    if (!n) return -1;
+    //checando se n está no meio da lista
+    if (n->ant) n->ant->prox = n->prox;
+    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
+
+    if (n->prox) n->prox->ant = n->ant;
+    else lista->cauda = n->prox;
+
+    free(n);
+    lista->tam--;
+
+    return 0;
+}

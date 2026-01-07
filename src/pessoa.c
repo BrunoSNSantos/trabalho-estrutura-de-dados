@@ -69,6 +69,7 @@ int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
     pessoa_no *n = buscar_pessoa(lista, dados.codigo);
     if (!n) return -1;
     n->data = dados;
+    
     return 0;
 }
 
