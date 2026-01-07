@@ -115,3 +115,21 @@ int carregar_tipo_pet_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
     fclose(f);
     return 0;
 }
+
+int tipo_pet_salvar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
+    if (!lista || !nome_arquivo) return -1;
+
+    FILE *f = fopen(nome_arquivo, "w");
+    if (!f) return -1;
+
+    tipo_pet_no *auxp = lista->cabeca;
+    while (auxp) {
+        fprintf(f, "%d;%s\n", 
+        auxp->data.codigo,
+        auxp->data.descricao);
+    auxp = auxp->prox;
+    }
+    
+    fclose(f);
+    return 0;
+}

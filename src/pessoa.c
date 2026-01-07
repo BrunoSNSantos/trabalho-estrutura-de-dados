@@ -69,7 +69,7 @@ int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
     pessoa_no *n = buscar_pessoa(lista, dados.codigo);
     if (!n) return -1;
     n->data = dados;
-    
+
     return 0;
 }
 
@@ -147,6 +147,7 @@ int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
         auxp->data.data_nascimento);
     auxp = auxp->prox;
     }
+    
     fclose(f);
     return 0;
 }
