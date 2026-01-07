@@ -24,7 +24,7 @@ void liberar_pessoa_lista(pessoa_lista *lista) {
         auxp = no;
     }
     free(lista);
-    return 0;
+    return;
 }
 
 static pessoa_no* criar_no(pessoa_dados *d) {
@@ -74,7 +74,7 @@ int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
 
 int remover_pessoa(pessoa_lista *lista, int codigo) {
     pessoa_no *n = buscar_pessoa(lista, codigo);
-    if (!n == NULL) return -1;
+    if (!n) return -1;
     //checando se n está no meio da lista
     if (n->ant) n->ant->prox = n->prox;
     else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
