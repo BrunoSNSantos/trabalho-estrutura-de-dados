@@ -121,3 +121,24 @@ int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
     fclose(f);
     return 0;
 }
+
+
+int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
+    if (!lista || !nome_arquivo) return -1;
+
+    FILE *f = fopen(nome_arquivo, "w");
+    if (!f) return -1;
+
+    pessoa_no *auxp = lista->cabeca;
+    while (auxp) {
+        fprintf(f, "%d; %s; %s; %s; %s", 
+        auxp->data.codigo,
+        auxp->data.nome,
+        auxp->data.fone,
+        auxp->data.endereco,
+        auxp->data.data_nascimento);
+    auxp = auxp->prox;
+    }
+    fclose(f);
+    return 0;
+}
