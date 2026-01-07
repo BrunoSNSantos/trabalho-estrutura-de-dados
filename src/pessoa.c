@@ -138,7 +138,7 @@ int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
 
     pessoa_no *auxp = lista->cabeca;
     while (auxp) {
-        fprintf(f, "%d; %s; %s; %s; %s", 
+        fprintf(f, "%d;%s;%s;%s;%s\n", 
         auxp->data.codigo,
         auxp->data.nome,
         auxp->data.fone,
