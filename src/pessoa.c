@@ -38,8 +38,8 @@ static pessoa_no* criar_no(pessoa_dados *d) {
 int criar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
     if (!lista) return -1;
 
-    pessoa_no *n = criar_no(&dados);
     if (buscar_pessoa(lista, dados.codigo) != NULL) return -1;
+    pessoa_no *n = criar_no(&dados);
 
     if (lista->cauda == NULL) {
         lista->cabeca = lista->cauda = n;
@@ -57,11 +57,10 @@ pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo) {
     if (!lista) return NULL;
     pessoa_no *auxp = lista->cabeca;
 
-    while(auxp != NULL && auxp->data.codigo != codigo) {
+    while (auxp) {
+        if (auxp->data.codigo == codigo) return auxp;
         auxp = auxp->prox;
     }
-    if (auxp->data.codigo == codigo) return auxp;
-
     return NULL;
 }
 
@@ -147,7 +146,7 @@ int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
         auxp->data.data_nascimento);
     auxp = auxp->prox;
     }
-    
+
     fclose(f);
     return 0;
 }

@@ -12,7 +12,7 @@ tipo_pet_lista* inicar_tipo_pet_lista(void){
     l->cauda = NULL;
     l->tam = 0;
 
-    return 1;
+    return l;
 }
 
 void liberar_tipo_pet_lista(tipo_pet_lista *lista) {
@@ -30,6 +30,7 @@ void liberar_tipo_pet_lista(tipo_pet_lista *lista) {
 
 static tipo_pet_no* criar_no(tipo_pet_dados *d){
     tipo_pet_no *n = malloc(sizeof(tipo_pet_no));
+    if (!n) return -1;
     n->data = *d;
     n->ant = n->prox = NULL;
     return n;
@@ -38,9 +39,9 @@ static tipo_pet_no* criar_no(tipo_pet_dados *d){
 int criar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados) {
     if (!lista) return -1;
 
-    tipo_pet_no *n = criar_no(&dados);
     if (buscar_tipo_pet(lista, dados.codigo) != NULL) return -1;
-
+    tipo_pet_no *n = criar_no(&dados);
+    
     if (lista->cauda == NULL) {
         lista->cabeca = lista->cauda = n;
     } else {
@@ -54,14 +55,13 @@ int criar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados) {
 }
 
 tipo_pet_no* buscar_tipo_pet(tipo_pet_lista *lista, int codigo) {
-    if (!lista) return -1;
-
+    if (!lista) return NULL;
     tipo_pet_no *auxp = lista->cabeca;
-    while(auxp != NULL && auxp->data.codigo != codigo) {
+
+    while (auxp) {
+        if (auxp->data.codigo == codigo) return auxp;
         auxp = auxp->prox;
     }
-    if (auxp->data.codigo == codigo) return auxp;
-
     return NULL;
 }
 
@@ -106,8 +106,8 @@ int carregar_tipo_pet_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
         if (!tok) continue;
         d.codigo = atoi(tok);
 
-        char *tok = strtok(line, ";");
-        if (tok) strncpy(d.codigo, tok, max-1);
+        tok = strtok(NULL, ";");
+        if (tok) strncpy(d.descricao, tok, max-1);
 
         criar_tipo_pet(lista, d);
     }
@@ -129,7 +129,7 @@ int tipo_pet_salvar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
         auxp->data.descricao);
     auxp = auxp->prox;
     }
-    
+
     fclose(f);
     return 0;
 }
