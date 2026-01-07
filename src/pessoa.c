@@ -49,8 +49,8 @@ int criar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
         lista->cauda = n;
     }
     lista->tam++;
-    return 0;
 
+    return 0;
 }
 
 pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo) {

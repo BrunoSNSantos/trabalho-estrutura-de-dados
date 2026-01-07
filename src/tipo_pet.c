@@ -27,3 +27,40 @@ void liberar_tipo_pet_lista(tipo_pet_lista *lista) {
     free(lista);
     return;
 }
+
+static tipo_pet_no* criar_no(tipo_pet_dados *d){
+    tipo_pet_no *n = malloc(sizeof(tipo_pet_no));
+    n->data = *d;
+    n->ant = n->prox = NULL;
+    return n;
+}
+
+int criar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados) {
+    if (!lista) return -1;
+
+    tipo_pet_no *n = criar_no(&dados);
+    if (buscar_tipo_pet(lista, dados.codigo) != NULL) return -1;
+
+    if (lista->cauda == NULL) {
+        lista->cabeca = lista->cauda = n;
+    } else {
+        lista->cauda->prox = n;
+        n->ant = lista->cauda;
+        lista->cauda = n;
+    }
+    lista->tam++;
+
+    return 0;
+}
+
+tipo_pet_no* buscar_tipo_pet(tipo_pet_lista *lista, int codigo) {
+    if (!lista) return -1;
+
+    tipo_pet_no *auxp = lista->cabeca;
+    while(auxp != NULL && auxp->data.codigo != codigo) {
+        auxp = auxp->prox;
+    }
+    if (auxp->data.codigo == codigo) return auxp;
+
+    return NULL;
+}
