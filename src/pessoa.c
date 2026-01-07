@@ -6,6 +6,7 @@
 
 pessoa_lista* iniciar_pessoa_lista(void) {
     pessoa_lista *l = malloc(sizeof(pessoa_lista));
+    if (!l) return NULL;
     l->cabeca = NULL;
     l-> cauda = NULL;
     l->tam = 0;
@@ -14,7 +15,7 @@ pessoa_lista* iniciar_pessoa_lista(void) {
 }
 
 void liberar_pessoa_lista(pessoa_lista *lista) {
-    if (lista=NULL) return;
+    if (lista==NULL) return;
 
     pessoa_no *auxp = lista->cabeca;
     while(auxp!=NULL) {
@@ -22,10 +23,13 @@ void liberar_pessoa_lista(pessoa_lista *lista) {
         free(auxp);
         auxp = no;
     }
+    free(lista);
+    return 0;
 }
 
 static pessoa_no* criar_no(pessoa_dados *d) {
     pessoa_no *no = (pessoa_no*)malloc(sizeof(pessoa_no));
+    if (!no) return NULL;
     no->data = *d;
     no->ant = no->prox = NULL;
     return no; 
@@ -33,7 +37,10 @@ static pessoa_no* criar_no(pessoa_dados *d) {
 
 int criar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
     if (!lista) return -1;
+
     pessoa_no *n = criar_no(&dados);
+    if (buscar_pessoa(lista, dados.codigo) != NULL) return -1;
+
     if (lista->cauda == NULL) {
         lista->cabeca = lista->cauda = n;
     } else {
@@ -50,7 +57,7 @@ pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo) {
     if (!lista) return NULL;
     pessoa_no *auxp = lista->cabeca;
 
-    while(auxp) {
+    while(auxp != NULL && auxp->data.codigo != codigo) {
         auxp = auxp->prox;
     }
     if (auxp->data.codigo == codigo) return auxp;
