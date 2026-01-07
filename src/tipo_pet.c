@@ -88,3 +88,30 @@ int remover_tipo_pet(tipo_pet_lista *lista, int codigo) {
 
     return 0;
 }
+
+int carregar_tipo_pet_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
+    if (!lista || !nome_arquivo) return -1;
+
+    FILE *f = fopen(nome_arquivo, "r");
+    if (!f) return -1;
+
+    char line[512];
+    while(fgets(line, sizeof(line), f)) {
+        line[strcspn(line, "\n")] = '\0';
+        if (line[0] == '\0') continue;
+
+        tipo_pet_dados d = {0};
+
+        char *tok = strtok(line, ";");
+        if (!tok) continue;
+        d.codigo = atoi(tok);
+
+        char *tok = strtok(line, ";");
+        if (tok) strncpy(d.codigo, tok, max-1);
+
+        criar_tipo_pet(lista, d);
+    }
+
+    fclose(f);
+    return 0;
+}
