@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pessoa.h"
-#define max 10
 
-pessoa_lista* iniciar_pessoa_lista(void) {
+pessoa_lista* iniciar_pessoa_listaa(void) {
     pessoa_lista *l = malloc(sizeof(pessoa_lista));
     if (!l) return NULL;
     l->cabeca = NULL;
@@ -14,7 +13,7 @@ pessoa_lista* iniciar_pessoa_lista(void) {
     return l;
 }
 
-void liberar_pessoa_lista(pessoa_lista *lista) {
+void liberar_pessoa_listaa(pessoa_lista *lista) {
     if (lista==NULL) return;
 
     pessoa_no *auxp = lista->cabeca;
@@ -75,9 +74,9 @@ int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
 int remover_pessoa(pessoa_lista *lista, int codigo) {
     pessoa_no *n = buscar_pessoa(lista, codigo);
     if (!n) return -1;
-    //checando se n está no meio da lista
+    //checando se n está no meio da listaa
     if (n->ant) n->ant->prox = n->prox;
-    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
+    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da listaa
 
     if (n->prox) n->prox->ant = n->ant;
     else lista->cauda = n->prox;
@@ -108,19 +107,19 @@ int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
 
         //campo nome
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.nome, tok, max-1);
+        if (tok) strncpy(d.nome, tok, PESSOA_NOME_MAX-1);
 
         //campo fone
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.fone, tok, max-1);
+        if (tok) strncpy(d.fone, tok, PESSOA_FONE_MAX-1);
 
         //campo endereco
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.endereco, tok, max-1);
+        if (tok) strncpy(d.endereco, tok, PESSOA_END_MAX-1);
 
         //campo data_nascimento
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.data_nascimento, tok, max-1);
+        if (tok) strncpy(d.data_nascimento, tok, PESSOA_DATA_MAX-1);
 
         criar_pessoa(lista, d);
     }

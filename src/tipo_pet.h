@@ -4,7 +4,7 @@
 #include <stdio.h>
 #define max 10
 
-typedef struct {
+typedef struct tipo_pet_dados{
     int codigo;
     char descricao[max];
 } tipo_pet_dados;

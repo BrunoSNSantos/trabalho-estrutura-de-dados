@@ -89,7 +89,7 @@ int remover_tipo_pet(tipo_pet_lista *lista, int codigo) {
     return 0;
 }
 
-int carregar_tipo_pet_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
+int tipo_pet_carregar__arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
     if (!lista || !nome_arquivo) return -1;
 
     FILE *f = fopen(nome_arquivo, "r");

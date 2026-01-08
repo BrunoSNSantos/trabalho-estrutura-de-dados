@@ -2,14 +2,18 @@
 #define PESSOA_H
 
 #include <stdio.h>
-#define max 10
 
-typedef struct {
+#define PESSOA_NOME_MAX 100
+#define PESSOA_FONE_MAX 30
+#define PESSOA_END_MAX 150
+#define PESSOA_DATA_MAX 20
+
+typedef struct pessoa_dados {
     int codigo;
-    char nome[max];
-    char fone[max];
-    char endereco[max];
-    char data_nascimento[max];
+    char nome[PESSOA_NOME_MAX];
+    char fone[PESSOA_FONE_MAX];
+    char endereco[PESSOA_END_MAX];
+    char data_nascimento[PESSOA_DATA_MAX];
 } pessoa_dados;
 
 typedef struct pessoa_no {
@@ -19,7 +23,7 @@ typedef struct pessoa_no {
     struct pessoa_no *pai;
 } pessoa_no;
 
-typedef struct {
+typedef struct pessoa_lista{
     pessoa_no *cabeca;
     pessoa_no *cauda;
     int tam;
