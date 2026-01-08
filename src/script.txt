@@ -10,5 +10,4 @@ insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (101, 20, 'Mia', 
 
 select * from pessoa order by nome;
 
-delete from pessoa where codigo = 10;
 delete from pessoa where codigo = 30;

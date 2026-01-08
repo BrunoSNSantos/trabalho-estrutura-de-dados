@@ -22,7 +22,7 @@ typedef struct tipo_pet_lista {
     int tam;
 } tipo_pet_lista;
 
-tipo_pet_lista* inicar_tipo_pet_lista(void);
+tipo_pet_lista* iniciar_tipo_pet_lista(void);
 void liberar_tipo_pet_lista(tipo_pet_lista *lista);
 
 int criar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados);

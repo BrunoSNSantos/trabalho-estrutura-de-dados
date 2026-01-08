@@ -39,6 +39,8 @@ int remover_pessoa(pessoa_lista *lista, int codigo);
 
 int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo);
 int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo);
+void pessoa_imprimir_callback(void *dado);
+void pessoa_gerar_relatorio_ordenado(pessoa_lista *lista);
 
 
 #endif 

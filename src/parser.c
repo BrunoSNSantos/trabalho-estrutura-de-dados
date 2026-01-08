@@ -48,7 +48,7 @@ void ler_linha(char *linha, Fila *f) {
     // 2. Identificar TABELA
     token = strtok(NULL, " ");
     // Pula palavras de ligação ("into", "from")
-    while (token && (strcasecmp(token, "into") == 0 || strcasecmp(token, "from") == 0)) {
+    while (token && (strcasecmp(token, "into") == 0 || strcasecmp(token, "from") == 0 || strcmp(token, "*") == 0)) {
         token = strtok(NULL, " ");
     }
 
@@ -99,9 +99,9 @@ void ler_linha(char *linha, Fila *f) {
             // --- Mapa PET ---
             else if (cmd.tabela == TAB_PET) {
                 if (strcasecmp(col, "codigo") == 0) index = 0;
-                else if (strcasecmp(col, "id_pessoa") == 0) index = 1;
+                else if (strcasecmp(col, "codigo_pes") == 0 || strcasecmp(col, "codigo_cli") == 0) index = 1;
                 else if (strcasecmp(col, "nome") == 0) index = 2;
-                else if (strcasecmp(col, "id_tipo") == 0) index = 3;
+                else if (strcasecmp(col, "codigo_tipo") == 0) index = 3;
             }
             // --- Mapa TIPO_PET ---
             else if (cmd.tabela == TAB_TIPO_PET) {
@@ -135,46 +135,36 @@ void ler_linha(char *linha, Fila *f) {
     // BLOCO DO SELECT
     // =========================================================
     else if (cmd.operacao == OP_SELECT) {
-        int tem_where = 0;
-        cmd.tem_order_by = 0; // Inicializa com 0
-        
-        // Varre procurando 'where' ou 'order'
-        char *token_ptr = token; // Guarda ponteiro atual para continuar busca se precisar
-        
-        // Lógica para WHERE
-        while (token != NULL) {
-            if (strcasecmp(token, "where") == 0) { tem_where = 1; break; }
-            token = strtok(NULL, " ");
-        }
+        cmd.tem_order_by = 0;
+        cmd.qtd_params = 0;
 
-        if (tem_where) {
-            token = strtok(NULL, " =;");
-            if (token) strcpy(cmd.campos[0], token);
-            
-            token = strtok(NULL, " =;");
-            if (token) {
-                limpar_string(token);
-                strcpy(cmd.valores[0], token);
-                cmd.qtd_params = 1;
-            }
-        } else {
-            cmd.qtd_params = 0; // Select *
-        }
-        
-        // --- NOVO BLOCO: Lógica para ORDER BY ---
-        // Reinicia a busca no buffer ou continua (dependendo de como o strtok parou)
-        // Como strtok é destrutivo, vamos assumir que o resto da string ainda está lá.
-        // O jeito mais seguro no seu parser atual é continuar pedindo tokens:
-        
+        // Loop Único: Varre a frase procurando tanto WHERE quanto ORDER
         while (token != NULL) {
-            if (strcasecmp(token, "order") == 0) {
-                token = strtok(NULL, " "); // Pega o "by"
-                if (token && strcasecmp(token, "by") == 0) {
-                    // PDF diz que é order by nome.
-                    // Se quiser ler o campo: token = strtok(NULL, " ;");
-                    cmd.tem_order_by = 1; 
+            
+            // Caso encontre o WHERE
+            if (strcasecmp(token, "where") == 0) {
+                token = strtok(NULL, " =;"); // Pega o campo
+                if (token) strcpy(cmd.campos[0], token);
+                
+                token = strtok(NULL, " =;"); // Pega o valor
+                if (token) {
+                    limpar_string(token);
+                    strcpy(cmd.valores[0], token);
+                    cmd.qtd_params = 1;
                 }
             }
+            
+            // Caso encontre o ORDER BY
+            else if (strcasecmp(token, "order") == 0) {
+                // Espia o próximo token para confirmar se é "by"
+                char *prox = strtok(NULL, " ;"); 
+                if (prox && strcasecmp(prox, "by") == 0) {
+                    cmd.tem_order_by = 1;
+                    // O PDF pede ordenação fixa por nome, então não precisamos ler o campo
+                }
+            }
+            
+            // Continua para a próxima palavra
             token = strtok(NULL, " ");
         }
     }

@@ -4,17 +4,14 @@
 
 pet_lista* iniciar_pet_lista(void){
     pet_lista *l = malloc(sizeof(pet_lista));
-    
     l->cabeca = NULL;
     l->cauda = NULL;
     l->tam = 0;
-
     return l;
 }
 
 void liberar_pet_lista(pet_lista *lista){
     if(!lista) return;
-
     pet_no *auxp = lista->cabeca;
     while(auxp){
         pet_no *n = auxp->prox;
@@ -28,29 +25,26 @@ static pet_no* criar_no(pet_dados *d){
     pet_no *n = malloc(sizeof(pet_no));
     n->data = *d;
     n->ant = n->prox = NULL;
+    n->pai = NULL;
     return n;
 }
 
-int dono_existe(pet_lista *lista, int codigo_dono){
-    if (!lista) return -1;
-    pet_no *auxp = lista->cabeca;
-    while(auxp) {
-        if(auxp->data.codigo_pessoa == codigo_dono) return 1;
-        auxp = auxp->prox;
-    }
-    return 0;
-}
-
-int criar_pet(pet_lista *lista, pet_dados data) {
+int criar_pet(pet_lista *lista, pessoa_lista *l_pessoas, tipo_pet_lista *l_tipos, pet_dados data) {
     if (!lista) return -1;
 
     if (buscar_pet(lista, data.codigo) != NULL) return -1;
 
-    if (dono_existe(lista, data.codigo) != 1) return -2;
+    if (l_pessoas != NULL) {
+        if (buscar_pessoa(l_pessoas, data.codigo_pessoa) == NULL) return -2;
+    }
+
+    if (l_tipos != NULL) {
+        if (buscar_tipo_pet(l_tipos, data.codigo_tipo) == NULL) return -3;
+    }
 
     pet_no *n = criar_no(&data);
 
-    if(lista->cauda==NULL) lista->cabeca = lista->cauda = n;
+    if(lista->cauda == NULL) lista->cabeca = lista->cauda = n;
     else {
         lista->cauda->prox = n;
         n->ant = lista->cauda;
@@ -62,7 +56,6 @@ int criar_pet(pet_lista *lista, pet_dados data) {
 
 pet_no* buscar_pet(pet_lista *lista, int codigo){
     if (!lista) return NULL;
-
     pet_no *auxp = lista->cabeca;
     while(auxp){
         if(auxp->data.codigo == codigo) return auxp;
@@ -86,11 +79,18 @@ int remover_pet(pet_lista *lista, int codigo){
     return 0;
 }
 
-int atualizar_pet(pet_lista *lista, pet_dados data) {
+int atualizar_pet(pet_lista *lista, pessoa_lista *l_pessoas, tipo_pet_lista *l_tipos, pet_dados data) {
     pet_no *n = buscar_pet(lista, data.codigo);
     if(!n) return -1;
 
-    if(dono_existe(lista, data.codigo_pessoa) != 1) return -2;
+    if (l_pessoas != NULL) {
+        if (buscar_pessoa(l_pessoas, data.codigo_pessoa) == NULL) return -2;
+    }
+
+    if (l_tipos != NULL) {
+        if (buscar_tipo_pet(l_tipos, data.codigo_tipo) == NULL) return -3;
+    }
+
     n->data = data;
     return 0;
 }

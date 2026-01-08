@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pessoa.h"
+#include "arvore.h"
 
 pessoa_lista* iniciar_pessoa_lista(void) {
     pessoa_lista *l = malloc(sizeof(pessoa_lista));
@@ -148,4 +149,33 @@ int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
 
     fclose(f);
     return 0;
+}
+
+void pessoa_imprimir_callback(void *dado) {
+    pessoa_no *p = (pessoa_no*)dado;
+    printf(" -> ID: %d | Nome: %s | Fone: %s\n", 
+           p->data.codigo, p->data.nome, p->data.fone);
+}
+
+void pessoa_gerar_relatorio_ordenado(pessoa_lista *lista) {
+    if (!lista) return;
+
+    printf("\n[RELATORIO ARVORE] Pessoas Ordenadas:\n");
+    
+    // 1. Cria a árvore temporária
+    NoArvore *raiz = arv_criar();
+    pessoa_no *curr = lista->cabeca;
+
+    // 2. Preenche com os dados da lista
+    while (curr != NULL) {
+        // Insere o código como chave e o nó da lista como dado
+        raiz = arv_inserir(raiz, curr->data.codigo, (void*)curr);
+        curr = curr->prox;
+    }
+
+    // 3. Imprime e Libera
+    arv_imprimir_em_ordem(raiz, pessoa_imprimir_callback);
+    arv_liberar(raiz);
+    
+    printf("--------------------------------------\n");
 }
