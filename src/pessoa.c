@@ -77,10 +77,10 @@ int remover_pessoa(pessoa_lista *lista, int codigo) {
     if (!n) return -1;
     //checando se n está no meio da listaa
     if (n->ant) n->ant->prox = n->prox;
-    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da listaa
+    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
 
     if (n->prox) n->prox->ant = n->ant;
-    else lista->cauda = n->prox;
+    else lista->cauda = n->ant;
 
     free(n);
     lista->tam--;

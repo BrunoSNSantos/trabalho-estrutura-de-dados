@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tipo_pet.h"
-#define max 10
 
 tipo_pet_lista* iniciar_tipo_pet_lista(void){
     tipo_pet_lista *l = malloc(sizeof(tipo_pet_lista));
@@ -81,7 +80,7 @@ int remover_tipo_pet(tipo_pet_lista *lista, int codigo) {
     else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
 
     if (n->prox) n->prox->ant = n->ant;
-    else lista->cauda = n->prox;
+    else lista->cauda = n->ant;
 
     free(n);
     lista->tam--;
@@ -107,7 +106,7 @@ int tipo_pet_carregar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
         d.codigo = atoi(tok);
 
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.descricao, tok, max-1);
+        if (tok) strncpy(d.descricao, tok, TIPO_PET_DESC-1);
 
         criar_tipo_pet(lista, d);
     }

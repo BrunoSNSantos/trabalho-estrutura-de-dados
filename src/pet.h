@@ -7,6 +7,9 @@
 
 #define PET_NAME_MAX 100
 
+typedef struct pessoa_lista pessoa_lista;
+typedef struct tipo_pet_lista tipo_pet_lista;
+
 typedef struct pet_dados{
     int codigo;
     int codigo_pessoa;
@@ -30,12 +33,13 @@ typedef struct pet_lista{
 pet_lista* iniciar_pet_lista(void);
 void liberar_pet_lista(pet_lista *lista);
 
-int criar_pet(pet_lista *lista, pessoa_lista *l_pessoas, tipo_pet_lista *l_tipos, pet_dados data);
+/* insert returns 0 ok, -1 duplicate code, -2 invalid owner, -3 invalid tipo */
+int criar_pet(pet_lista *lista,pessoa_lista *pessoa_lista,tipo_pet_lista *tipo_pet_lista, pet_dados data);
 pet_no* buscar_pet(pet_lista *lista, int codigo);
 int remover_pet(pet_lista *lista, int codigo);
-int atualizar_pet(pet_lista *lista, pessoa_lista *l_pessoas, tipo_pet_lista *l_tipos, pet_dados data);
+int atualizar_pet(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, pet_dados data);
 
-int pet_carregar_arquivo(pet_lista *lista, const char *nome_arquivo);
+int pet_carregar_arquivo(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, const char *nome_arquivo);
 int pet_salvar_arquivo(pet_lista *lista, const char *nome_arquivo);
 void pet_print_all(pet_lista *list);
 

@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "pet.h"
+#include "pessoa.h"
+#include "tipo_pet.h"
 
 pet_lista* iniciar_pet_lista(void){
     pet_lista *l = malloc(sizeof(pet_lista));
@@ -23,24 +25,21 @@ void liberar_pet_lista(pet_lista *lista){
 
 static pet_no* criar_no(pet_dados *d){
     pet_no *n = malloc(sizeof(pet_no));
+    if (!n) return NULL;
     n->data = *d;
     n->ant = n->prox = NULL;
     n->pai = NULL;
     return n;
 }
 
-int criar_pet(pet_lista *lista, pessoa_lista *l_pessoas, tipo_pet_lista *l_tipos, pet_dados data) {
+int criar_pet(pet_lista *lista,pessoa_lista *pessoa_lista,tipo_pet_lista *tipo_pet_lista, pet_dados data) {
     if (!lista) return -1;
 
     if (buscar_pet(lista, data.codigo) != NULL) return -1;
 
-    if (l_pessoas != NULL) {
-        if (buscar_pessoa(l_pessoas, data.codigo_pessoa) == NULL) return -2;
-    }
+    if (!buscar_pessoa(pessoa_lista, data.codigo_pessoa)) return -2;
 
-    if (l_tipos != NULL) {
-        if (buscar_tipo_pet(l_tipos, data.codigo_tipo) == NULL) return -3;
-    }
+    if (!buscar_tipo_pet(tipo_pet_lista, data.codigo_tipo)) return -3;
 
     pet_no *n = criar_no(&data);
 
@@ -79,49 +78,63 @@ int remover_pet(pet_lista *lista, int codigo){
     return 0;
 }
 
-int atualizar_pet(pet_lista *lista, pessoa_lista *l_pessoas, tipo_pet_lista *l_tipos, pet_dados data) {
+int atualizar_pet(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, pet_dados data) {
     pet_no *n = buscar_pet(lista, data.codigo);
     if(!n) return -1;
 
-    if (l_pessoas != NULL) {
-        if (buscar_pessoa(l_pessoas, data.codigo_pessoa) == NULL) return -2;
-    }
+    if (!buscar_pessoa(pessoa_lista, data.codigo_pessoa)) return -2;
 
-    if (l_tipos != NULL) {
-        if (buscar_tipo_pet(l_tipos, data.codigo_tipo) == NULL) return -3;
-    }
+    if (!buscar_tipo_pet(tipo_pet_lista, data.codigo_tipo)) return -3;
 
     n->data = data;
     return 0;
 }
 
-int pet_carregar_arquivo(pet_lista *lista, const char *nome_arquivo){
-    if(!lista || !nome_arquivo) return -1;
+int pet_carregar_arquivo(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, const char *nome_arquivo) {
+    if(!lista || !pessoa_lista || !tipo_pet_lista || !nome_arquivo) return -1;
 
     FILE *f = fopen(nome_arquivo, "r");
     if(!f) return -1;
 
     char line[256];
     while(fgets(line, sizeof(line), f)){
-        line[strcspn(line, "\n")] = 0;
+        line[strcspn(line, "\n")] = '\0';
         if(line[0]=='\0') continue;
 
         pet_dados d = {0};
+
         char *tok = strtok(line, ";");
         if(!tok) continue;
         d.codigo = atoi(tok);
 
         tok = strtok(NULL, ";");
-        if(tok) d.codigo_pessoa = atoi(tok);
-        
-        tok = strtok(NULL, ";");
-        if(tok) strncpy(d.nome, tok, PET_NAME_MAX-1);
+        if(!tok) continue;
+        d.codigo_pessoa = atoi(tok);
 
         tok = strtok(NULL, ";");
-        if(tok) d.codigo_tipo = atoi(tok);
+        if(tok){
+            strncpy(d.nome, tok, PET_NAME_MAX-1);
+            d.nome[PET_NAME_MAX-1] = '\0';
+        }
+
+        tok = strtok(NULL, ";");
+        if(!tok) continue;
+        d.codigo_tipo = atoi(tok);
+
+        if (!buscar_pessoa(pessoa_lista, d.codigo_pessoa))
+            continue;
+
+        if (!buscar_tipo_pet(tipo_pet_lista, d.codigo_tipo))
+            continue;
+
+        if (buscar_pet(lista, d.codigo))
+            continue;
 
         pet_no *n = criar_no(&d);
-        if(lista->cauda==NULL) lista->cabeca = lista->cauda = n;
+        if(!n) continue;
+
+        if(lista->cauda == NULL)
+            lista->cabeca = lista->cauda = n;
         else {
             lista->cauda->prox = n;
             n->ant = lista->cauda;
@@ -129,6 +142,7 @@ int pet_carregar_arquivo(pet_lista *lista, const char *nome_arquivo){
         }
         lista->tam++;
     }
+
     fclose(f);
     return 0;
 }
