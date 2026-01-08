@@ -3,13 +3,6 @@
 #include <string.h>
 #include "arvore.h"
 
-// Garante que strcasecmp funcione no Windows
-#ifdef _WIN32
-    #ifndef strcasecmp
-        #define strcasecmp stricmp
-    #endif
-#endif
-
 NoArvore *arv_criar() {
     return NULL;
 }
@@ -17,24 +10,19 @@ NoArvore *arv_criar() {
 NoArvore *arv_inserir(NoArvore *raiz, char* chave, void *ptr_dado) {
     if(!raiz) {
         NoArvore *novo = (NoArvore*)malloc(sizeof(NoArvore));
-        // Copia a string (Nome) para o nó
         strcpy(novo->chave, chave);
         novo->ptr_dado = ptr_dado;
         novo->dir = NULL;
         novo->esq = NULL;
         return novo;
     }
-    
-    // Compara strings para saber se vai pra Esquerda ou Direita
-    // < 0: vem antes (A antes de B)
-    // > 0: vem depois
+
     int cmp = strcasecmp(chave, raiz->chave);
 
     if (cmp < 0) {
         raiz->esq = arv_inserir(raiz->esq, chave, ptr_dado);
     }
     else {
-        // Se for maior ou igual, vai pra direita
         raiz->dir = arv_inserir(raiz->dir, chave, ptr_dado);
     }
     return raiz;
@@ -52,12 +40,12 @@ void *arv_buscar(NoArvore *raiz, char* chave) {
     }
     if (cmp < 0) {
         return arv_buscar(raiz->esq, chave);
-    }
-    else {
+    } else {
         return arv_buscar(raiz->dir, chave);
     }
 }
 
+// Percurso Esquerda -> Raiz -> Direita para listagem ordenada
 void arv_imprimir_recursivo(NoArvore *raiz, FuncaoImpressao func) {
     if (raiz != NULL) {      
         arv_imprimir_recursivo(raiz->esq, func);

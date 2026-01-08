@@ -75,10 +75,8 @@ int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
 int remover_pessoa(pessoa_lista *lista, int codigo) {
     pessoa_no *n = buscar_pessoa(lista, codigo);
     if (!n) return -1;
-    //checando se n está no meio da listaa
     if (n->ant) n->ant->prox = n->prox;
-    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
-
+    else lista->cabeca = n->prox;
     if (n->prox) n->prox->ant = n->ant;
     else lista->cauda = n->ant;
 
@@ -101,24 +99,19 @@ int pessoa_carregar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
 
         pessoa_dados d = {0};
 
-        //campo codigo
         char *tok = strtok(line, ";");
         if (!tok) continue;
         d.codigo = atoi(tok);
 
-        //campo nome
         tok = strtok(NULL, ";");
         if (tok) strncpy(d.nome, tok, PESSOA_NOME_MAX-1);
 
-        //campo fone
         tok = strtok(NULL, ";");
         if (tok) strncpy(d.fone, tok, PESSOA_FONE_MAX-1);
 
-        //campo endereco
         tok = strtok(NULL, ";");
         if (tok) strncpy(d.endereco, tok, PESSOA_END_MAX-1);
 
-        //campo data_nascimento
         tok = strtok(NULL, ";");
         if (tok) strncpy(d.data_nascimento, tok, PESSOA_DATA_MAX-1);
 

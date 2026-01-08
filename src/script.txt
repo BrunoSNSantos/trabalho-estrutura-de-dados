@@ -1,13 +1,23 @@
 insert into tipo_pet (codigo, descricao) values (1, 'Cachorro');
 insert into tipo_pet (codigo, descricao) values (2, 'Gato');
+insert into tipo_pet (codigo, descricao) values (3, 'Papagaio');
 
-insert into pessoa (codigo, nome, fone) values (10, 'Davi', '9999-8888');
-insert into pessoa (codigo, nome, fone) values (20, 'Ana', '9888-7777');
-insert into pessoa (codigo, nome, fone) values (30, 'Carlos', '9777-6666');
+insert into pessoa (codigo, nome, fone) values (1, 'Zeca', '85 9111-1111');
+insert into pessoa (codigo, nome, fone, endereco) values (2, 'Ana', '85 9222-2222', 'Rua das Flores, 10');
+insert into pessoa (codigo, nome, fone, data_nascimento) values (3, 'Beto', '85 9333-3333', '01/01/2000');
 
-insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (100, 10, 'Rex', 1);
-insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (101, 20, 'Mia', 2);
+insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (101, 2, 'Floquinho', 2);
+insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (102, 1, 'Max', 1);
+
+insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (999, 50, 'Erro', 1);
+
+insert into pet (codigo, codigo_pes, nome, codigo_tipo) values (888, 1, 'Erro2', 99);
 
 select * from pessoa order by nome;
 
-delete from pessoa where codigo = 30;
+delete from pessoa where codigo = 1;
+delete from pessoa where codigo = 2;
+
+delete from pessoa where codigo = 3;
+
+select * from pessoa order by nome;

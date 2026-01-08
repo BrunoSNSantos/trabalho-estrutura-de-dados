@@ -178,3 +178,13 @@ void pet_print_all(pet_lista *list){
         cur = cur->prox;
     }
 }
+
+int pet_existe_dono(pet_lista *lista, int id_pessoa) {
+    if(!lista) return 0;
+    pet_no *aux = lista->cabeca;
+    while(aux) {
+        if(aux->data.codigo_pessoa == id_pessoa) return 1;
+        aux = aux->prox;
+    }
+    return 0;
+}

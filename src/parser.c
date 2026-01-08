@@ -27,16 +27,12 @@ void limpar_coluna(char *str) {
     *dst = '\0';
 }
 
-// --- Função Principal: Ler Linha ---
-
 void ler_linha(char *linha, Fila *f) {
     char buffer[500];
     strcpy(buffer, linha);
-
     Comando cmd = {0};
-
-    // 1. Identificar OPERAÇÃO
     char *token = strtok(buffer, " ");
+
     if (!token) return;
 
     if (strcasecmp(token, "insert") == 0) cmd.operacao = OP_INSERT;
@@ -45,7 +41,6 @@ void ler_linha(char *linha, Fila *f) {
     else if (strcasecmp(token, "update") == 0) cmd.operacao = OP_UPDATE;
     else return;
 
-    // 2. Identificar TABELA
     token = strtok(NULL, " ");
     while (token && (strcasecmp(token, "into") == 0 || strcasecmp(token, "from") == 0 || strcmp(token, "*") == 0)) {
         token = strtok(NULL, " ");
@@ -57,15 +52,12 @@ void ler_linha(char *linha, Fila *f) {
     else if (strcasecmp(token, "pet") == 0) cmd.tabela = TAB_PET;
     else if (strcasecmp(token, "tipo_pet") == 0) cmd.tabela = TAB_TIPO_PET;
     else return;
-    // =========================================================
-    // BLOCO DO INSERT
-    // =========================================================
+
     if (cmd.operacao == OP_INSERT) {
         char temp_cols[6][50];
         char temp_vals[6][50];
         int qtd = 0;
 
-        // A. LER NOMES DAS COLUNAS
         while ((token = strtok(NULL, " ,()")) != NULL && qtd < 6) {
             
             if (strcasecmp(token, "values") == 0) break; 
@@ -74,7 +66,6 @@ void ler_linha(char *linha, Fila *f) {
             qtd++;
         }
 
-        // B. LER VALORES
         int i = 0;
         while ((token = strtok(NULL, "(),;")) != NULL && i < 6) {
             limpar_string(token);
@@ -82,41 +73,29 @@ void ler_linha(char *linha, Fila *f) {
             i++;
         }
 
-        // C. MAPEAMENTO (De -> Para)
         for (int k = 0; k < qtd; k++) {
             char *col = temp_cols[k];
             char *val = temp_vals[k];
             int index = -1;
 
-            // --- Mapa PESSOA ---
             if (cmd.tabela == TAB_PESSOA) {
                 if (strcasecmp(col, "codigo") == 0) index = 0;
                 else if (strcasecmp(col, "nome") == 0) index = 1;
                 else if (strcasecmp(col, "fone") == 0) index = 2;
                 else if (strcasecmp(col, "endereco") == 0) index = 3;
-            }
-            // --- Mapa PET ---
-            else if (cmd.tabela == TAB_PET) {
+            } else if (cmd.tabela == TAB_PET) {
                 if (strcasecmp(col, "codigo") == 0) index = 0;
                 else if (strcasecmp(col, "codigo_pes") == 0 || strcasecmp(col, "codigo_cli") == 0) index = 1;
                 else if (strcasecmp(col, "nome") == 0) index = 2;
                 else if (strcasecmp(col, "codigo_tipo") == 0) index = 3;
-            }
-            // --- Mapa TIPO_PET ---
-            else if (cmd.tabela == TAB_TIPO_PET) {
+            } else if (cmd.tabela == TAB_TIPO_PET) {
                 if (strcasecmp(col, "codigo") == 0) index = 0;
                 else if (strcasecmp(col, "descricao") == 0) index = 1;
             }
-
             if (index != -1) strcpy(cmd.valores[index], val);
         }
         cmd.qtd_params = 4;
-    }
-
-    // =========================================================
-    // BLOCO DO DELETE
-    // =========================================================
-    else if (cmd.operacao == OP_DELETE) {
+    } else if (cmd.operacao == OP_DELETE) {
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
         
         token = strtok(NULL, " =;");
@@ -128,12 +107,7 @@ void ler_linha(char *linha, Fila *f) {
             strcpy(cmd.valores[0], token);
             cmd.qtd_params = 1;
         }
-    }
-    
-    // =========================================================
-    // BLOCO DO SELECT
-    // =========================================================
-    else if (cmd.operacao == OP_SELECT) {
+    } else if (cmd.operacao == OP_SELECT) {
         cmd.tem_order_by = 0;
         cmd.qtd_params = 0;
         while (token != NULL) {
@@ -147,8 +121,7 @@ void ler_linha(char *linha, Fila *f) {
                     strcpy(cmd.valores[0], token);
                     cmd.qtd_params = 1;
                 }
-            }
-            else if (strcasecmp(token, "order") == 0) {
+            } else if (strcasecmp(token, "order") == 0) {
                 char *prox = strtok(NULL, " ;"); 
                 if (prox && strcasecmp(prox, "by") == 0) {
                     cmd.tem_order_by = 1;
@@ -156,12 +129,7 @@ void ler_linha(char *linha, Fila *f) {
             }
             token = strtok(NULL, " ");
         }
-    }
-
-    // =========================================================
-    // BLOCO DO UPDATE
-    // =========================================================
-    else if (cmd.operacao == OP_UPDATE) {
+    } else if (cmd.operacao == OP_UPDATE) {
         while (token && strcasecmp(token, "set") != 0) token = strtok(NULL, " ");
         if ((token = strtok(NULL, " ="))) strcpy(cmd.campos[0], token);
         if ((token = strtok(NULL, " ="))) { limpar_string(token); strcpy(cmd.valores[0], token); }

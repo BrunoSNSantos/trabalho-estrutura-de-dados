@@ -61,48 +61,46 @@ int main() {
         }
     }
 
-    // 6. Processar PESSOAS
-    printf("\n--- Processando PESSOAS ---\n");
+    // 1º TURNO: Criar TIPOS e PESSOAS (Base para os Pets)
+    printf("\n--- Turno 1: Carga de Base ---\n");
+    
+    // Processa apenas INSERTS de Tipos
+    while(!filaVazia(&fila_tipo)) {
+        Comando cmd = remover(&fila_tipo);
+        if(cmd.operacao == OP_INSERT) {
+            tipo_pet_dados d;
+            d.codigo = atoi(cmd.valores[0]);
+            strcpy(d.descricao, cmd.valores[1]);
+            criar_tipo_pet(lista_tipos, d);
+            printf("[OK] Tipo %d processado.\n", d.codigo);
+        }
+    }
+
+    // Processa apenas INSERTS de Pessoas
+    // Criamos uma fila temporária para guardar os DELETEs e SELECTs para o 3º turno
+    Fila fila_pessoa_restante;
+    iniciarFila(&fila_pessoa_restante);
+
     while(!filaVazia(&fila_pessoa)) {
         Comando cmd = remover(&fila_pessoa);
-
         if(cmd.operacao == OP_INSERT) {
             pessoa_dados d;
             d.codigo = atoi(cmd.valores[0]);
             strcpy(d.nome, cmd.valores[1]);
             strcpy(d.fone, cmd.valores[2]);
-            
             if(cmd.qtd_params > 3) strcpy(d.endereco, cmd.valores[3]);
-            else strcpy(d.endereco, "");
-            
             if(cmd.qtd_params > 4) strcpy(d.data_nascimento, cmd.valores[4]);
-            else strcpy(d.data_nascimento, "");
             
-            int res = criar_pessoa(lista_pessoas, d);
-            if(res == 0) printf("[OK] Pessoa %d criada.\n", d.codigo);
-            else printf("[ERRO] Falha na Pessoa %d (Erro: %d)\n", d.codigo, res);
-        }
-        else if(cmd.operacao == OP_DELETE) {
-            int id = atoi(cmd.valores[0]);
-            
-            int res = remover_pessoa(lista_pessoas, id);
-            
-            if(res == 0) printf("[OK] Pessoa %d removida.\n", id);
-            else printf("[ERRO] Falha ao remover Pessoa %d (Erro: %d)\n", id, res);
-        }
-        else if(cmd.operacao == OP_SELECT) {
-            if(cmd.tem_order_by) {
-                // Chama a função da árvore (agora com ordenação por Nome)
-                pessoa_gerar_relatorio_ordenado(lista_pessoas);
-            }
+            if(criar_pessoa(lista_pessoas, d) == 0) printf("[OK] Pessoa %d criada.\n", d.codigo);
+        } else {
+            adicionar(&fila_pessoa_restante, cmd);
         }
     }
 
-    // 7. Processar PETS
-    printf("\n--- Processando PETS ---\n");
+    // 2º TURNO: Criar PETS (Agora os donos já existem na lista!)
+    printf("\n--- Turno 2: Processando PETS ---\n");
     while(!filaVazia(&fila_pet)) {
         Comando cmd = remover(&fila_pet);
-
         if(cmd.operacao == OP_INSERT) {
             pet_dados d;
             d.codigo = atoi(cmd.valores[0]);
@@ -110,13 +108,28 @@ int main() {
             strcpy(d.nome, cmd.valores[2]);
             d.codigo_tipo = atoi(cmd.valores[3]);
 
-            // Validação com as 3 listas
-            int res = criar_pet(lista_pets, lista_pessoas, lista_tipos, d);
-            
-            if(res == 0) printf("[OK] Pet %d criado.\n", d.codigo);
-            else if (res == -2) printf("[ERRO] Pet %d cancelado: Dono %d nao existe.\n", d.codigo, d.codigo_pessoa);
-            else if (res == -3) printf("[ERRO] Pet %d cancelado: Tipo %d nao existe.\n", d.codigo, d.codigo_tipo);
-            else printf("[ERRO] Falha ao criar Pet %d (Erro: %d)\n", d.codigo, res);
+            if(criar_pet(lista_pets, lista_pessoas, lista_tipos, d) == 0) 
+                printf("[OK] Pet %d criado.\n", d.codigo);
+            else 
+                printf("[ERRO] Falha no Pet %d (Dono ou Tipo invalido).\n", d.codigo);
+        }
+    }
+
+    // 3º TURNO: Ações Críticas (SELECT e DELETE)
+    printf("\n--- Turno 3: Relatorios e Remocoes ---\n");
+    while(!filaVazia(&fila_pessoa_restante)) {
+        Comando cmd = remover(&fila_pessoa_restante);
+        
+        if(cmd.operacao == OP_SELECT && cmd.tem_order_by) {
+            pessoa_gerar_relatorio_ordenado(lista_pessoas);
+        } 
+        else if(cmd.operacao == OP_DELETE) {
+            int id = atoi(cmd.valores[0]);
+            if(pet_existe_dono(lista_pets, id)) {
+                printf("[ERRO] Pessoa %d possui Pets e nao pode ser removida.\n", id);
+            } else {
+                if(remover_pessoa(lista_pessoas, id) == 0) printf("[OK] Pessoa %d removida.\n", id);
+            }
         }
     }
 
