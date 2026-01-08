@@ -2,11 +2,11 @@
 #define TIPO_PET_H
 
 #include <stdio.h>
-#define max 10
+#define TIPO_PET_DESC
 
 typedef struct tipo_pet_dados{
     int codigo;
-    char descricao[max];
+    char descricao[TIPO_PET_DESC];
 } tipo_pet_dados;
 
 typedef struct tipo_pet_no {

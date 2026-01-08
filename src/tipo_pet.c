@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tipo_pet.h"
-#define max 10
 
 tipo_pet_lista* inicar_tipo_pet_lista(void){
     tipo_pet_lista *l = malloc(sizeof(tipo_pet_lista));
@@ -30,7 +29,7 @@ void liberar_tipo_pet_lista(tipo_pet_lista *lista) {
 
 static tipo_pet_no* criar_no(tipo_pet_dados *d){
     tipo_pet_no *n = malloc(sizeof(tipo_pet_no));
-    if (!n) return -1;
+    if (!n) return NULL;
     n->data = *d;
     n->ant = n->prox = NULL;
     return n;
@@ -81,7 +80,7 @@ int remover_tipo_pet(tipo_pet_lista *lista, int codigo) {
     else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
 
     if (n->prox) n->prox->ant = n->ant;
-    else lista->cauda = n->prox;
+    else lista->cauda = n->ant;
 
     free(n);
     lista->tam--;
@@ -89,7 +88,7 @@ int remover_tipo_pet(tipo_pet_lista *lista, int codigo) {
     return 0;
 }
 
-int tipo_pet_carregar__arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
+int tipo_pet_carregar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
     if (!lista || !nome_arquivo) return -1;
 
     FILE *f = fopen(nome_arquivo, "r");
@@ -107,7 +106,7 @@ int tipo_pet_carregar__arquivo(tipo_pet_lista *lista, const char *nome_arquivo) 
         d.codigo = atoi(tok);
 
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.descricao, tok, max-1);
+        if (tok) strncpy(d.descricao, tok, TIPO_PET_DESC-1);
 
         criar_tipo_pet(lista, d);
     }

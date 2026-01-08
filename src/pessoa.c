@@ -3,7 +3,7 @@
 #include <string.h>
 #include "pessoa.h"
 
-pessoa_lista* iniciar_pessoa_listaa(void) {
+pessoa_lista* iniciar_pessoa_lista(void) {
     pessoa_lista *l = malloc(sizeof(pessoa_lista));
     if (!l) return NULL;
     l->cabeca = NULL;
@@ -13,7 +13,7 @@ pessoa_lista* iniciar_pessoa_listaa(void) {
     return l;
 }
 
-void liberar_pessoa_listaa(pessoa_lista *lista) {
+void liberar_pessoa_lista(pessoa_lista *lista) {
     if (lista==NULL) return;
 
     pessoa_no *auxp = lista->cabeca;
@@ -76,10 +76,10 @@ int remover_pessoa(pessoa_lista *lista, int codigo) {
     if (!n) return -1;
     //checando se n está no meio da listaa
     if (n->ant) n->ant->prox = n->prox;
-    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da listaa
+    else lista->cabeca = n->prox; //serve para o caso do no ser o primeiro item da lista
 
     if (n->prox) n->prox->ant = n->ant;
-    else lista->cauda = n->prox;
+    else lista->cauda = n->ant;
 
     free(n);
     lista->tam--;
