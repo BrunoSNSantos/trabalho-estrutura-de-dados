@@ -31,6 +31,16 @@ static pet_no* criar_no(pet_dados *d){
     return n;
 }
 
+int dono_existe(pet_lista *lista, int codigo_dono){
+    if (!lista) return -1;
+    pet_no *auxp = lista->cabeca;
+    while(auxp) {
+        if(auxp->data.codigo_pessoa == codigo_dono) return 1;
+        auxp = auxp->prox;
+    }
+    return 0;
+}
+
 int criar_pet(pet_lista *lista, pet_dados data) {
     if (!lista) return -1;
 
@@ -85,16 +95,6 @@ int atualizar_pet(pet_lista *lista, pet_dados data) {
     return 0;
 }
 
-int dono_existe(pet_lista *lista, int codigo_dono){
-    if (!lista) return -1;
-    pet_no *auxp = lista->cabeca;
-    while(auxp) {
-        if(auxp->data.codigo_pessoa == codigo_dono) return 1;
-        auxp = auxp->prox;
-    }
-    return 0;
-}
-
 int pet_carregar_arquivo(pet_lista *lista, const char *nome_arquivo){
     if(!lista || !nome_arquivo) return -1;
 
@@ -103,7 +103,7 @@ int pet_carregar_arquivo(pet_lista *lista, const char *nome_arquivo){
 
     char line[256];
     while(fgets(line, sizeof(line), f)){
-        trim_newline(line);
+        line[strcspn(line, "\n")] = 0;
         if(line[0]=='\0') continue;
 
         pet_dados d = {0};

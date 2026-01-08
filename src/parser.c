@@ -4,10 +4,6 @@
 #include <ctype.h>
 #include "parser.h" 
 
-#ifdef _WIN32
-    #define strcasecmp stricmp
-#endif
-
 
 void limpar_string(char *str) {
     char *src = str, *dst = str;

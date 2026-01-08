@@ -30,7 +30,7 @@ void liberar_tipo_pet_lista(tipo_pet_lista *lista) {
 
 static tipo_pet_no* criar_no(tipo_pet_dados *d){
     tipo_pet_no *n = malloc(sizeof(tipo_pet_no));
-    if (!n) return -1;
+    if (!n) return NULL;
     n->data = *d;
     n->ant = n->prox = NULL;
     return n;

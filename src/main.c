@@ -49,21 +49,21 @@ int main() {
 
     // 1. Inicializar Listas 
     // OBS: Corrija os nomes aqui se você já tiver arrumado os typos nos arquivos .c
-    pessoa_lista *lista_pessoas = iniciar_pessoa_listaa(); 
+    pessoa_lista *lista_pessoas = iniciar_pessoa_lista(); 
     pet_lista *lista_pets = iniciar_pet_lista();
     tipo_pet_lista *lista_tipos = inicar_tipo_pet_lista();
 
     // Carrega dados persistidos
     pessoa_carregar_arquivo(lista_pessoas, "pessoas.txt");
     pet_carregar_arquivo(lista_pets, "pets.txt");
-    tipo_pet_carregar__arquivo(lista_tipos, "tipos.txt"); 
+    tipo_pet_carregar_arquivo(lista_tipos, "tipos.txt"); 
 
     // 2. Processar Script de Comandos
     Fila fila_geral;
     iniciarFila(&fila_geral);
     
     // Tente ler o script. Crie um arquivo 'script.txt' para testar!
-    processar_arquivo("script.txt", &fila_geral); 
+    processar_arquivo("C:\\projeto\\trabalho-estrutura-de-dados\\src\\script.txt", &fila_geral); 
 
     // 3. Separação em Filas Específicas
     Fila fila_pessoa, fila_pet;
