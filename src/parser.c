@@ -47,7 +47,6 @@ void ler_linha(char *linha, Fila *f) {
 
     // 2. Identificar TABELA
     token = strtok(NULL, " ");
-    // Pula palavras de ligação ("into", "from")
     while (token && (strcasecmp(token, "into") == 0 || strcasecmp(token, "from") == 0 || strcmp(token, "*") == 0)) {
         token = strtok(NULL, " ");
     }
@@ -120,10 +119,10 @@ void ler_linha(char *linha, Fila *f) {
     else if (cmd.operacao == OP_DELETE) {
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
         
-        token = strtok(NULL, " =;"); // Campo
+        token = strtok(NULL, " =;");
         if (token) strcpy(cmd.campos[0], token);
         
-        token = strtok(NULL, " =;"); // Valor
+        token = strtok(NULL, " =;");
         if (token) {
             limpar_string(token);
             strcpy(cmd.valores[0], token);
@@ -137,34 +136,24 @@ void ler_linha(char *linha, Fila *f) {
     else if (cmd.operacao == OP_SELECT) {
         cmd.tem_order_by = 0;
         cmd.qtd_params = 0;
-
-        // Loop Único: Varre a frase procurando tanto WHERE quanto ORDER
         while (token != NULL) {
-            
-            // Caso encontre o WHERE
             if (strcasecmp(token, "where") == 0) {
-                token = strtok(NULL, " =;"); // Pega o campo
+                token = strtok(NULL, " =;");
                 if (token) strcpy(cmd.campos[0], token);
                 
-                token = strtok(NULL, " =;"); // Pega o valor
+                token = strtok(NULL, " =;");
                 if (token) {
                     limpar_string(token);
                     strcpy(cmd.valores[0], token);
                     cmd.qtd_params = 1;
                 }
             }
-            
-            // Caso encontre o ORDER BY
             else if (strcasecmp(token, "order") == 0) {
-                // Espia o próximo token para confirmar se é "by"
                 char *prox = strtok(NULL, " ;"); 
                 if (prox && strcasecmp(prox, "by") == 0) {
                     cmd.tem_order_by = 1;
-                    // O PDF pede ordenação fixa por nome, então não precisamos ler o campo
                 }
             }
-            
-            // Continua para a próxima palavra
             token = strtok(NULL, " ");
         }
     }
@@ -173,24 +162,16 @@ void ler_linha(char *linha, Fila *f) {
     // BLOCO DO UPDATE
     // =========================================================
     else if (cmd.operacao == OP_UPDATE) {
-        // Procura SET
         while (token && strcasecmp(token, "set") != 0) token = strtok(NULL, " ");
-        
-        // Dados do SET
         if ((token = strtok(NULL, " ="))) strcpy(cmd.campos[0], token);
         if ((token = strtok(NULL, " ="))) { limpar_string(token); strcpy(cmd.valores[0], token); }
 
-        // Procura WHERE
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
-        
-        // Dados do WHERE
         if ((token = strtok(NULL, " =;"))) strcpy(cmd.campos[1], token);
         if ((token = strtok(NULL, " =;"))) { limpar_string(token); strcpy(cmd.valores[1], token); }
         
         cmd.qtd_params = 2;
     }
-
-    // FINAL: Enfileirar
     adicionar(f, cmd);
 }
 
@@ -204,7 +185,6 @@ void processar_arquivo(char *nome_arquivo, Fila *f) {
 
     char linha[200];
     while(fgets(linha, sizeof(linha), arq)) {
-        // Ignora linhas vazias ou muito curtas
         if(strlen(linha) > 2) {
             ler_linha(linha, f);
         }

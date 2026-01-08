@@ -1,56 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "arvore.h"
+
+// Garante que strcasecmp funcione no Windows
+#ifdef _WIN32
+    #ifndef strcasecmp
+        #define strcasecmp stricmp
+    #endif
+#endif
 
 NoArvore *arv_criar() {
     return NULL;
 }
 
-NoArvore *arv_inserir(NoArvore *raiz, int id, void *ptr_dado) {
+NoArvore *arv_inserir(NoArvore *raiz, char* chave, void *ptr_dado) {
     if(!raiz) {
         NoArvore *novo = (NoArvore*)malloc(sizeof(NoArvore));
-        novo->id = id;
+        // Copia a string (Nome) para o nó
+        strcpy(novo->chave, chave);
         novo->ptr_dado = ptr_dado;
         novo->dir = NULL;
         novo->esq = NULL;
         return novo;
     }
     
-    if (id < raiz->id) {
-        raiz->esq = arv_inserir(raiz->esq, id, ptr_dado);
+    // Compara strings para saber se vai pra Esquerda ou Direita
+    // < 0: vem antes (A antes de B)
+    // > 0: vem depois
+    int cmp = strcasecmp(chave, raiz->chave);
+
+    if (cmp < 0) {
+        raiz->esq = arv_inserir(raiz->esq, chave, ptr_dado);
     }
-    else if(id > raiz->id) {
-        raiz->dir = arv_inserir(raiz->dir, id, ptr_dado);
+    else {
+        // Se for maior ou igual, vai pra direita
+        raiz->dir = arv_inserir(raiz->dir, chave, ptr_dado);
     }
-    // Se for igual, não insere duplicado ou atualiza (neste caso, mantemos o primeiro)
     return raiz;
 }
 
-void *arv_buscar(NoArvore *raiz, int id) {
+void *arv_buscar(NoArvore *raiz, char* chave) {
     if(!raiz) {
         return NULL;
     }
-    if(id == raiz->id) {
-        return raiz->ptr_dado; // <--- CORREÇÃO: Faltava o return aqui
+    
+    int cmp = strcasecmp(chave, raiz->chave);
+
+    if(cmp == 0) {
+        return raiz->ptr_dado;
     }
-    if (id < raiz->id) {
-        return arv_buscar(raiz->esq, id);
+    if (cmp < 0) {
+        return arv_buscar(raiz->esq, chave);
     }
     else {
-        return arv_buscar(raiz->dir, id);
+        return arv_buscar(raiz->dir, chave);
     }
 }
 
-// Função auxiliar recursiva
 void arv_imprimir_recursivo(NoArvore *raiz, FuncaoImpressao func) {
     if (raiz != NULL) {      
         arv_imprimir_recursivo(raiz->esq, func);
-        if (func != NULL) func(raiz->ptr_dado); // Chama a função de print do main
+        if (func != NULL) func(raiz->ptr_dado);
         arv_imprimir_recursivo(raiz->dir, func);
     }
 }
 
-// Função chamada pela main
 void arv_imprimir_em_ordem(NoArvore *raiz, FuncaoImpressao func) {
     arv_imprimir_recursivo(raiz, func);
 }
@@ -59,6 +74,6 @@ void arv_liberar(NoArvore *raiz) {
     if (raiz != NULL) {
         arv_liberar(raiz->esq);
         arv_liberar(raiz->dir);
-        free(raiz); // Libera apenas o nó da árvore, não o dado da lista!
+        free(raiz);
     }
 }

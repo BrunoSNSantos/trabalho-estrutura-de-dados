@@ -160,20 +160,13 @@ void pessoa_imprimir_callback(void *dado) {
 void pessoa_gerar_relatorio_ordenado(pessoa_lista *lista) {
     if (!lista) return;
 
-    printf("\n[RELATORIO ARVORE] Pessoas Ordenadas:\n");
-    
-    // 1. Cria a árvore temporária
+    printf("\n[RELATORIO ARVORE] Pessoas Ordenadas por Nome:\n");
     NoArvore *raiz = arv_criar();
     pessoa_no *curr = lista->cabeca;
-
-    // 2. Preenche com os dados da lista
     while (curr != NULL) {
-        // Insere o código como chave e o nó da lista como dado
-        raiz = arv_inserir(raiz, curr->data.codigo, (void*)curr);
+        raiz = arv_inserir(raiz, curr->data.nome, (void*)curr);
         curr = curr->prox;
     }
-
-    // 3. Imprime e Libera
     arv_imprimir_em_ordem(raiz, pessoa_imprimir_callback);
     arv_liberar(raiz);
     
