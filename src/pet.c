@@ -101,7 +101,7 @@ int pet_carregar_arquivo(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_
 
     char line[256];
     while(fgets(line, sizeof(line), f)){
-        trim_newline(line);
+        line[strcspn(line, "\n")] = '\0';
         if(line[0]=='\0') continue;
 
         pet_dados d = {0};

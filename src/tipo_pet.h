@@ -2,7 +2,7 @@
 #define TIPO_PET_H
 
 #include <stdio.h>
-#define TIPO_PET_DESC
+#define TIPO_PET_DESC 100
 
 typedef struct tipo_pet_dados{
     int codigo;
