@@ -26,12 +26,12 @@ tipo_pet_lista* inicar_tipo_pet_lista(void);
 void liberar_tipo_pet_lista(tipo_pet_lista *lista);
 
 int criar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados);
-tipo_pet_dados* buscar_tipo_pet(tipo_pet_lista *lista, int codigo);
+tipo_pet_no* buscar_tipo_pet(tipo_pet_lista *lista, int codigo);
 int atualizar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados);
-int remover_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados codigo);
+int remover_tipo_pet(tipo_pet_lista *lista, int codigo);
 
-int carregar_tipo_pet_arquivo(tipo_pet_lista *lista, const char *nome_arquivo);
-int salvar_arquivo_tipo_pet(tipo_pet_lista *lista, const char *nome_arquivo);
+int tipo_pet_carregar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo);
+int tipo_pet_salvar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo);
 
 
 #endif
