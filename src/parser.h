@@ -1,5 +1,5 @@
-#ifndef PARCER_H
-#define PARCER_H
+#ifndef PARSER_H
+#define PARSER_H
 #include "fila.h"
 
 void processar_arquvio(char *nome_arquivo, Fila *f);

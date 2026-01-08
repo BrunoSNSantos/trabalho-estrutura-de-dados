@@ -3,7 +3,7 @@
 #include <string.h>
 #include "pessoa.h"
 
-pessoa_lista* iniciar_pessoa_listaa(void) {
+pessoa_lista* iniciar_pessoa_lista(void) {
     pessoa_lista *l = malloc(sizeof(pessoa_lista));
     if (!l) return NULL;
     l->cabeca = NULL;
@@ -13,7 +13,7 @@ pessoa_lista* iniciar_pessoa_listaa(void) {
     return l;
 }
 
-void liberar_pessoa_listaa(pessoa_lista *lista) {
+void liberar_pessoa_lista(pessoa_lista *lista) {
     if (lista==NULL) return;
 
     pessoa_no *auxp = lista->cabeca;

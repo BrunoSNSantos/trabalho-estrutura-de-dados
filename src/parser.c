@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "parcer.h" 
+#include "parser.h" 
 
 #ifdef _WIN32
     #define strcasecmp stricmp
@@ -140,8 +140,12 @@ void ler_linha(char *linha, Fila *f) {
     // =========================================================
     else if (cmd.operacao == OP_SELECT) {
         int tem_where = 0;
+        cmd.tem_order_by = 0; // Inicializa com 0
         
-        // Varre procurando 'where'
+        // Varre procurando 'where' ou 'order'
+        char *token_ptr = token; // Guarda ponteiro atual para continuar busca se precisar
+        
+        // Lógica para WHERE
         while (token != NULL) {
             if (strcasecmp(token, "where") == 0) { tem_where = 1; break; }
             token = strtok(NULL, " ");
@@ -159,6 +163,23 @@ void ler_linha(char *linha, Fila *f) {
             }
         } else {
             cmd.qtd_params = 0; // Select *
+        }
+        
+        // --- NOVO BLOCO: Lógica para ORDER BY ---
+        // Reinicia a busca no buffer ou continua (dependendo de como o strtok parou)
+        // Como strtok é destrutivo, vamos assumir que o resto da string ainda está lá.
+        // O jeito mais seguro no seu parser atual é continuar pedindo tokens:
+        
+        while (token != NULL) {
+            if (strcasecmp(token, "order") == 0) {
+                token = strtok(NULL, " "); // Pega o "by"
+                if (token && strcasecmp(token, "by") == 0) {
+                    // PDF diz que é order by nome.
+                    // Se quiser ler o campo: token = strtok(NULL, " ;");
+                    cmd.tem_order_by = 1; 
+                }
+            }
+            token = strtok(NULL, " ");
         }
     }
 

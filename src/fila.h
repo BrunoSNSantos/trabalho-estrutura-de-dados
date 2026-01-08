@@ -17,6 +17,7 @@ typedef struct {
     char campos[5][50];
     char valores[5][50];
     int qtd_params;
+    int tem_order_by;
 } Comando;
 
 typedef struct No {

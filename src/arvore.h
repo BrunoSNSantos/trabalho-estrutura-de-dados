@@ -8,6 +8,7 @@ typedef void (*FuncaoImpressao)(void*);
 typedef struct NoArvore {
     int id;                 // Chave de busca (Código)
     void *ptr_dado;         // Ponteiro para o nó da Lista Encadeada (Pessoa ou Pet)
+    struct NoArvore *pai;
     struct NoArvore *esq;
     struct NoArvore *dir;
 } NoArvore;
