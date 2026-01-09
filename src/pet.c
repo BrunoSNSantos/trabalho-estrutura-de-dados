@@ -3,6 +3,7 @@
 #include "pet.h"
 #include "pessoa.h"
 #include "tipo_pet.h"
+#include "arvore.h"
 
 pet_lista* iniciar_pet_lista(void){
     pet_lista *l = malloc(sizeof(pet_lista));
@@ -195,4 +196,26 @@ int pet_existe_dono(pet_lista *lista, int id_pessoa) {
         aux = aux->prox;
     }
     return 0;
+}
+
+void pet_imprimir_callback(void *dado) {
+    pet_no *p = (pet_no*)dado;
+    printf(" -> ID: %d | Nome: %s | Dono: %d | Tipo: %d\n", 
+           p->data.codigo, p->data.nome, p->data.codigo_pessoa, p->data.codigo_tipo);
+}
+
+void pet_gerar_relatorio_ordenado(pet_lista *lista) {
+    if (!lista) return;
+
+    printf("\n[RELATORIO ARVORE] Pets Ordenados por Nome:\n");
+    NoArvore *raiz = arv_criar();
+    pet_no *curr = lista->cabeca;
+    while (curr != NULL) {
+        raiz = arv_inserir(raiz, curr->data.nome, (void*)curr);
+        curr = curr->prox;
+    }
+    arv_imprimir_em_ordem(raiz, pet_imprimir_callback);
+    arv_liberar(raiz);
+    
+    printf("--------------------------------------\n");
 }

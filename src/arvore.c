@@ -45,7 +45,6 @@ void *arv_buscar(NoArvore *raiz, char* chave) {
     }
 }
 
-// Percurso Esquerda -> Raiz -> Direita para listagem ordenada
 void arv_imprimir_recursivo(NoArvore *raiz, FuncaoImpressao func) {
     if (raiz != NULL) {      
         arv_imprimir_recursivo(raiz->esq, func);

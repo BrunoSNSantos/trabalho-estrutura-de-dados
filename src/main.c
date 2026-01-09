@@ -10,160 +10,123 @@
 int main() {
     printf("=== SISTEMA INICIADO ===\n");
 
-    // 1. Inicializar Listas
+    // 1. Inicializa Listas
     pessoa_lista *lista_pessoas = iniciar_pessoa_lista(); 
     pet_lista *lista_pets = iniciar_pet_lista();
     tipo_pet_lista *lista_tipos = iniciar_tipo_pet_lista();
 
-    // 2. Carregar dados (ATENÇÃO À ORDEM PARA VALIDAR FK)
-    
-    // 1º Carrega Tipos (Pet precisa deles)
+    // 2. Carrega Arquivos Existentes
     tipo_pet_carregar_arquivo(lista_tipos, "tipos.txt"); 
-    
-    // 2º Carrega Pessoas (Pet precisa delas)
     pessoa_carregar_arquivo(lista_pessoas, "pessoas.txt");
-    
-    // 3º Carrega Pets (Agora valida Pessoa e Tipo na carga)
-    // ATUALIZAÇÃO: Passando as 3 listas conforme o código do seu amigo
     pet_carregar_arquivo(lista_pets, lista_pessoas, lista_tipos, "pets.txt");
 
-
-    // 3. Processar Script
+    // 3. Lê o Script para a Fila Geral
     Fila fila_geral;
     iniciarFila(&fila_geral);
-    
     processar_arquivo("script.txt", &fila_geral); 
 
-    // 4. Separação em Filas Específicas
-    Fila fila_pessoa, fila_pet, fila_tipo;
-    iniciarFila(&fila_pessoa);
-    iniciarFila(&fila_pet);
-    iniciarFila(&fila_tipo);
+    printf("\n--- Processando Script ---\n");
 
+    // 4. Processa a Fila Geral UM POR UM (Sem separar por tabelas)
     while(!filaVazia(&fila_geral)) {
         Comando cmd = remover(&fila_geral);
-        if(cmd.tabela == TAB_PESSOA) adicionar(&fila_pessoa, cmd);
-        else if(cmd.tabela == TAB_PET) adicionar(&fila_pet, cmd);
-        else if(cmd.tabela == TAB_TIPO_PET) adicionar(&fila_tipo, cmd);
-    }
 
-    // 5. Processar TIPOS
-    printf("\n--- Processando TIPOS ---\n");
-    while(!filaVazia(&fila_tipo)) {
-        Comando cmd = remover(&fila_tipo);
-        if(cmd.operacao == OP_INSERT) {
-            tipo_pet_dados d;
-            d.codigo = atoi(cmd.valores[0]);
-            strcpy(d.descricao, cmd.valores[1]);
-            
-            criar_tipo_pet(lista_tipos, d);
-            printf("[OK] Tipo %d processado.\n", d.codigo);
-        }
-    }
-
-    // 1º TURNO: Criar TIPOS e PESSOAS (Base para os Pets)
-    printf("\n--- Turno 1: Carga de Base ---\n");
-    
-    // Processa apenas INSERTS de Tipos
-    while(!filaVazia(&fila_tipo)) {
-        Comando cmd = remover(&fila_tipo);
-        if(cmd.operacao == OP_INSERT) {
-            tipo_pet_dados d;
-            d.codigo = atoi(cmd.valores[0]);
-            strcpy(d.descricao, cmd.valores[1]);
-            criar_tipo_pet(lista_tipos, d);
-            printf("[OK] Tipo %d processado.\n", d.codigo);
-        }
-    }
-
-    // Processa apenas INSERTS de Pessoas
-    // Criamos uma fila temporária para guardar os DELETEs e SELECTs para o 3º turno
-    Fila fila_pessoa_restante;
-    iniciarFila(&fila_pessoa_restante);
-
-    while(!filaVazia(&fila_pessoa)) {
-        Comando cmd = remover(&fila_pessoa);
-        if(cmd.operacao == OP_INSERT) {
-            pessoa_dados d;
-            d.codigo = atoi(cmd.valores[0]);
-            strcpy(d.nome, cmd.valores[1]);
-            strcpy(d.fone, cmd.valores[2]);
-            if(cmd.qtd_params > 3) strcpy(d.endereco, cmd.valores[3]);
-            if(cmd.qtd_params > 4) strcpy(d.data_nascimento, cmd.valores[4]);
-            
-            if(criar_pessoa(lista_pessoas, d) == 0) printf("[OK] Pessoa %d criada.\n", d.codigo);
-        } else {
-            adicionar(&fila_pessoa_restante, cmd);
-        }
-    }
-
-    // 2º TURNO: Criar PETS (Agora os donos já existem na lista!)
-    printf("\n--- Turno 2: Processando PETS ---\n");
-    while(!filaVazia(&fila_pet)) {
-        Comando cmd = remover(&fila_pet);
-        if(cmd.operacao == OP_INSERT) {
-            pet_dados d;
-            d.codigo = atoi(cmd.valores[0]);
-            d.codigo_pessoa = atoi(cmd.valores[1]);
-            strcpy(d.nome, cmd.valores[2]);
-            d.codigo_tipo = atoi(cmd.valores[3]);
-
-            if(criar_pet(lista_pets, lista_pessoas, lista_tipos, d) == 0) 
-                printf("[OK] Pet %d criado.\n", d.codigo);
-            else 
-                printf("[ERRO] Falha no Pet %d (Dono ou Tipo invalido).\n", d.codigo);
-        }
-    }
-
-    // 3º TURNO: Ações Críticas (SELECT, DELETE e UPDATE)
-    printf("\n--- Turno 3: Relatorios e Acoes Criticas ---\n");
-    while(!filaVazia(&fila_pessoa_restante)) {
-        Comando cmd = remover(&fila_pessoa_restante);
-        
-        if(cmd.operacao == OP_SELECT && cmd.tem_order_by) {
-            pessoa_gerar_relatorio_ordenado(lista_pessoas);
-        } 
-        else if(cmd.operacao == OP_DELETE) {
-            int id = atoi(cmd.valores[0]);
-            
-            // Validação de Integridade: Impede remover dono com pets
-            if(pet_existe_dono(lista_pets, id)) {
-                printf("[ERRO] Pessoa %d possui Pets e nao pode ser removida.\n", id);
-            } else {
-                if(remover_pessoa(lista_pessoas, id) == 0) 
-                    printf("[OK] Pessoa %d removida.\n", id);
-                else 
-                    printf("[ERRO] Falha ao remover Pessoa %d.\n", id);
+        // ==========================================================
+        // TIPO PET
+        // ==========================================================
+        if (cmd.tabela == TAB_TIPO_PET) {
+            if (cmd.operacao == OP_INSERT) {
+                tipo_pet_dados d;
+                d.codigo = atoi(cmd.valores[0]);
+                strcpy(d.descricao, cmd.valores[1]);
+                if (criar_tipo_pet(lista_tipos, d) == 0)
+                    printf("[OK] Tipo %d criado.\n", d.codigo);
+                else
+                    printf("[ERRO] Tipo %d ja existe.\n", d.codigo);
             }
-        }
-        else if (cmd.operacao == OP_UPDATE) {
-            // Lógica do Parser: 
-            // valores[1] = ID do WHERE (quem alterar)
-            // campos[0]  = Nome do campo (o que alterar)
-            // valores[0] = Novo valor
-            
-            int id_alvo = atoi(cmd.valores[1]); 
-            char *campo = cmd.campos[0];
-            char *valor = cmd.valores[0];
-
-            if (cmd.tabela == TAB_PESSOA) {
-                if (atualizar_pessoa(lista_pessoas, id_alvo, campo, valor) == 0)
-                    printf("[OK] Pessoa %d atualizada (%s -> %s).\n", id_alvo, campo, valor);
-                else 
-                    printf("[ERRO] Falha ao atualizar Pessoa %d.\n", id_alvo);
+            else if (cmd.operacao == OP_UPDATE) {
+                int id = atoi(cmd.valores[1]);
+                if (atualizar_tipo_pet(lista_tipos, id, cmd.campos[0], cmd.valores[0]) == 0)
+                    printf("[OK] Tipo %d atualizado.\n", id);
+                else
+                    printf("[ERRO] Falha update Tipo %d.\n", id);
             }
-            else if (cmd.tabela == TAB_PET) {
-                // Passa as listas auxiliares para o atualizar_pet validar Dono/Tipo
-                int res = atualizar_pet(lista_pets, lista_pessoas, lista_tipos, id_alvo, campo, valor);
+            // Implementar Delete Tipo se necessario
+        }
+
+        // ==========================================================
+        // PESSOA
+        // ==========================================================
+        else if (cmd.tabela == TAB_PESSOA) {
+            if (cmd.operacao == OP_INSERT) {
+                pessoa_dados d;
+                d.codigo = atoi(cmd.valores[0]);
+                strcpy(d.nome, cmd.valores[1]);
+                strcpy(d.fone, cmd.valores[2]);
+                if(cmd.qtd_params > 3) strcpy(d.endereco, cmd.valores[3]);
+                if(cmd.qtd_params > 4) strcpy(d.data_nascimento, cmd.valores[4]);
                 
-                if (res == 0) printf("[OK] Pet %d atualizado (%s -> %s).\n", id_alvo, campo, valor);
-                else if (res == -2) printf("[ERRO] Update Pet %d falhou: Novo Dono %s nao existe.\n", id_alvo, valor);
-                else if (res == -3) printf("[ERRO] Update Pet %d falhou: Novo Tipo %s nao existe.\n", id_alvo, valor);
-                else printf("[ERRO] Falha ao atualizar Pet %d.\n", id_alvo);
+                if(criar_pessoa(lista_pessoas, d) == 0) 
+                    printf("[OK] Pessoa %d criada.\n", d.codigo);
+                else
+                    printf("[ERRO] Pessoa %d ja existe.\n", d.codigo);
             }
-            else if (cmd.tabela == TAB_TIPO_PET) {
-                if (atualizar_tipo_pet(lista_tipos, id_alvo, campo, valor) == 0)
-                    printf("[OK] Tipo %d atualizado.\n", id_alvo);
+            else if (cmd.operacao == OP_DELETE) {
+                int id = atoi(cmd.valores[0]);
+                
+                // VALIDACAO CRITICA: Verifica vinculo antes de apagar
+                if(pet_existe_dono(lista_pets, id)) {
+                    printf("[ERRO] Pessoa %d possui Pets e nao pode ser removida.\n", id);
+                } else {
+                    if(remover_pessoa(lista_pessoas, id) == 0) 
+                        printf("[OK] Pessoa %d removida.\n", id);
+                    else 
+                        printf("[ERRO] Pessoa %d nao encontrada para remocao.\n", id);
+                }
+            }
+            else if (cmd.operacao == OP_UPDATE) {
+                int id = atoi(cmd.valores[1]);
+                if (atualizar_pessoa(lista_pessoas, id, cmd.campos[0], cmd.valores[0]) == 0)
+                    printf("[OK] Pessoa %d atualizada.\n", id);
+                else 
+                    printf("[ERRO] Falha update Pessoa %d.\n", id);
+            }
+            else if (cmd.operacao == OP_SELECT && cmd.tem_order_by) {
+                pessoa_gerar_relatorio_ordenado(lista_pessoas);
+            }
+        }
+
+        // ==========================================================
+        // PET
+        // ==========================================================
+        else if (cmd.tabela == TAB_PET) {
+            if (cmd.operacao == OP_INSERT) {
+                pet_dados d;
+                d.codigo = atoi(cmd.valores[0]);
+                d.codigo_pessoa = atoi(cmd.valores[1]);
+                strcpy(d.nome, cmd.valores[2]);
+                d.codigo_tipo = atoi(cmd.valores[3]);
+
+                if(criar_pet(lista_pets, lista_pessoas, lista_tipos, d) == 0) 
+                    printf("[OK] Pet %d criado.\n", d.codigo);
+                else 
+                    printf("[ERRO] Falha criar Pet %d (Dados invalidos ou duplicado).\n", d.codigo);
+            }
+            else if (cmd.operacao == OP_SELECT && cmd.tem_order_by) {
+                pet_gerar_relatorio_ordenado(lista_pets);
+            }
+            else if (cmd.operacao == OP_DELETE) {
+                int id = atoi(cmd.valores[0]);
+                if(remover_pet(lista_pets, id) == 0)
+                    printf("[OK] Pet %d removido.\n", id);
+                else
+                    printf("[ERRO] Pet %d nao encontrado.\n", id);
+            }
+            else if (cmd.operacao == OP_UPDATE) {
+                int id = atoi(cmd.valores[1]);
+                int res = atualizar_pet(lista_pets, lista_pessoas, lista_tipos, id, cmd.campos[0], cmd.valores[0]);
+                if (res == 0) printf("[OK] Pet %d atualizado.\n", id);
+                else printf("[ERRO] Falha update Pet %d (Cod erro: %d).\n", id, res);
             }
         }
     }
@@ -172,6 +135,8 @@ int main() {
     pessoa_salvar_arquivo(lista_pessoas, "pessoas.txt");
     pet_salvar_arquivo(lista_pets, "pets.txt");
     tipo_pet_salvar_arquivo(lista_tipos, "tipos.txt");
+    
+    // Nao esqueca de liberar memoria das listas aqui (liberar_pessoa_lista, etc)
     
     return 0;
 }

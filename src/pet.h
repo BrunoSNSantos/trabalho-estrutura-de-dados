@@ -42,5 +42,6 @@ int pet_existe_dono(pet_lista *lista, int id_pessoa);
 int pet_carregar_arquivo(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, const char *nome_arquivo);
 int pet_salvar_arquivo(pet_lista *lista, const char *nome_arquivo);
 void pet_print_all(pet_lista *list);
+void pet_gerar_relatorio_ordenado(pet_lista *lista);
 
 #endif
