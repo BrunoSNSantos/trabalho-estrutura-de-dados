@@ -1,12 +1,22 @@
-insert into tipo_pet(codigo, descricao) values(1, 'Mamifero');
-insert into pessoa(codigo, nome, fone) values(1, 'Testador', '99999999');
-
--- Inserindo pets com nomes FORA de ordem alfabetica
-insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(10, 1, 'Zorro', 1);
-insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(20, 1, 'Amanda', 1);
-insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(30, 1, 'Bartolomeu', 1);
-insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(40, 1, 'Xuxa', 1);
-insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(50, 1, 'Caramelo', 1);
-insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(60, 1, 'Lulu', 1);
-
+insert into tipo_pet(codigo, descricao) values(1, 'Cachorro');
+insert into tipo_pet(codigo, descricao) values(2, 'Gato');
+insert into tipo_pet(codigo, descricao) values(3, 'Passaro');
+insert into pessoa(codigo, nome, fone) values(10, 'Carlos', '99911111');
+insert into pessoa(codigo, nome, fone) values(20, 'Ana', '99922222');
+insert into pessoa(codigo, nome, fone) values(30, 'Bruno', '99933333');
+insert into pessoa(codigo, nome, fone) values(10, 'CarlosClone', '0000000');
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(500, 99, 'Fantasma', 1);
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(501, 10, 'Alien', 99);
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(100, 10, 'Zorro', 1);
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(101, 10, 'Amarelo', 3);
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(102, 20, 'Bidu', 1);
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(103, 20, 'Xuxa', 2);
+insert into pet(codigo, codigo_cli, nome, codigo_tipo) values(104, 30, 'Mingau', 2);
 select * from pet order by nome;
+update pet set nome = 'ZorroAtualizado' where codigo = 100;
+update pet set codigo_cli = 99 where codigo = 101;
+update pet set codigo_cli = 30 where codigo = 101;
+delete from pessoa where codigo = 10;
+delete from pet where codigo = 100;
+delete from pet where codigo = 101;
+delete from pessoa where codigo = 10;

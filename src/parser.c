@@ -31,8 +31,7 @@ void ler_linha(char *linha, Fila *f) {
     char buffer[500];
     strcpy(buffer, linha);
     Comando cmd = {0};
-    
-    // 1. Pega a operacao (INSERT, DELETE...)
+
     char *token = strtok(buffer, " ");
 
     if (!token) return;
@@ -43,16 +42,13 @@ void ler_linha(char *linha, Fila *f) {
     else if (strcasecmp(token, "update") == 0) cmd.operacao = OP_UPDATE;
     else return;
 
-    // 2. Pula palavras chaves (INTO, FROM) e busca a tabela
-    // CORRECAO AQUI: Adicionado '(' nos delimitadores para separar "pessoa(codigo..."
     token = strtok(NULL, " ("); 
     while (token && (strcasecmp(token, "into") == 0 || strcasecmp(token, "from") == 0 || strcmp(token, "*") == 0)) {
-        token = strtok(NULL, " ("); // CORRECAO AQUI TAMBEM
+        token = strtok(NULL, " ("); 
     }
 
     if (!token) return;
 
-    // Agora o token deve ser apenas "pessoa", "pet" ou "tipo_pet" limpo
     if (strcasecmp(token, "pessoa") == 0) cmd.tabela = TAB_PESSOA;
     else if (strcasecmp(token, "pet") == 0) cmd.tabela = TAB_PET;
     else if (strcasecmp(token, "tipo_pet") == 0) cmd.tabela = TAB_TIPO_PET;
@@ -63,7 +59,6 @@ void ler_linha(char *linha, Fila *f) {
         char temp_vals[6][50];
         int qtd = 0;
 
-        // Note: Aqui ja usamos " ,()" entao o resto funciona bem
         while ((token = strtok(NULL, " ,()")) != NULL && qtd < 6) {
             if (strcasecmp(token, "values") == 0) break; 
             strcpy(temp_cols[qtd], token);
@@ -71,10 +66,8 @@ void ler_linha(char *linha, Fila *f) {
         }
 
         int i = 0;
-        // Parsing dos valores
         while ((token = strtok(NULL, "(),;")) != NULL && i < 6) {
             limpar_string(token);
-            // Pequeno trim manual para remover espacos no inicio de valores (ex: " 'Joao'")
             char *start = token;
             while(*start == ' ') start++;
             strcpy(temp_vals[i], start);
@@ -103,7 +96,7 @@ void ler_linha(char *linha, Fila *f) {
             }
             if (index != -1) strcpy(cmd.valores[index], val);
         }
-        cmd.qtd_params = 4; // Ajuste conforme necessidade ou logica dinamica
+        cmd.qtd_params = 4; 
 
     } else if (cmd.operacao == OP_DELETE) {
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
@@ -177,7 +170,6 @@ void processar_arquivo(char *nome_arquivo, Fila *f) {
 
     char linha[200];
     while(fgets(linha, sizeof(linha), arq)) {
-        // Remove \n e \r do final da linha antes de processar
         linha[strcspn(linha, "\r\n")] = 0;
         
         if(strlen(linha) > 2) {

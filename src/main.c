@@ -10,30 +10,23 @@
 int main() {
     printf("=== SISTEMA INICIADO ===\n");
 
-    // 1. Inicializa Listas
     pessoa_lista *lista_pessoas = iniciar_pessoa_lista(); 
     pet_lista *lista_pets = iniciar_pet_lista();
     tipo_pet_lista *lista_tipos = iniciar_tipo_pet_lista();
 
-    // 2. Carrega Arquivos Existentes
     tipo_pet_carregar_arquivo(lista_tipos, "tipos.txt"); 
     pessoa_carregar_arquivo(lista_pessoas, "pessoas.txt");
     pet_carregar_arquivo(lista_pets, lista_pessoas, lista_tipos, "pets.txt");
 
-    // 3. Lê o Script para a Fila Geral
     Fila fila_geral;
     iniciarFila(&fila_geral);
     processar_arquivo("script.txt", &fila_geral); 
 
     printf("\n--- Processando Script ---\n");
 
-    // 4. Processa a Fila Geral UM POR UM (Sem separar por tabelas)
     while(!filaVazia(&fila_geral)) {
         Comando cmd = remover(&fila_geral);
 
-        // ==========================================================
-        // TIPO PET
-        // ==========================================================
         if (cmd.tabela == TAB_TIPO_PET) {
             if (cmd.operacao == OP_INSERT) {
                 tipo_pet_dados d;
@@ -51,12 +44,9 @@ int main() {
                 else
                     printf("[ERRO] Falha update Tipo %d.\n", id);
             }
-            // Implementar Delete Tipo se necessario
         }
 
-        // ==========================================================
-        // PESSOA
-        // ==========================================================
+
         else if (cmd.tabela == TAB_PESSOA) {
             if (cmd.operacao == OP_INSERT) {
                 pessoa_dados d;
@@ -73,8 +63,7 @@ int main() {
             }
             else if (cmd.operacao == OP_DELETE) {
                 int id = atoi(cmd.valores[0]);
-                
-                // VALIDACAO CRITICA: Verifica vinculo antes de apagar
+
                 if(pet_existe_dono(lista_pets, id)) {
                     printf("[ERRO] Pessoa %d possui Pets e nao pode ser removida.\n", id);
                 } else {
@@ -96,9 +85,6 @@ int main() {
             }
         }
 
-        // ==========================================================
-        // PET
-        // ==========================================================
         else if (cmd.tabela == TAB_PET) {
             if (cmd.operacao == OP_INSERT) {
                 pet_dados d;
@@ -136,7 +122,11 @@ int main() {
     pet_salvar_arquivo(lista_pets, "pets.txt");
     tipo_pet_salvar_arquivo(lista_tipos, "tipos.txt");
     
-    // Nao esqueca de liberar memoria das listas aqui (liberar_pessoa_lista, etc)
+    printf("Liberando memoria...\n");
+    liberar_pessoa_lista(lista_pessoas);
+    liberar_pet_lista(lista_pets);
+    liberar_tipo_pet_lista(lista_tipos);
+    printf("\n=== SISTEMA FINALIZADO ===\n");
     
     return 0;
 }
