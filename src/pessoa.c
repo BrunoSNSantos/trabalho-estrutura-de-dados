@@ -64,11 +64,24 @@ pessoa_no* buscar_pessoa(pessoa_lista *lista, int codigo) {
     return NULL;
 }
 
-int atualizar_pessoa(pessoa_lista *lista, pessoa_dados dados) {
-    pessoa_no *n = buscar_pessoa(lista, dados.codigo);
-    if (!n) return -1;
-    n->data = dados;
 
+int atualizar_pessoa(pessoa_lista *lista, int id, char *campo, char *valor) {
+    pessoa_no *p = buscar_pessoa(lista, id);
+    if (!p) return -1;
+
+    if (strcasecmp(campo, "nome") == 0) {
+        strncpy(p->data.nome, valor, PESSOA_NOME_MAX - 1);
+    } 
+    else if (strcasecmp(campo, "fone") == 0) {
+        strncpy(p->data.fone, valor, PESSOA_FONE_MAX - 1);
+    }
+    else if (strcasecmp(campo, "endereco") == 0) {
+        strncpy(p->data.endereco, valor, PESSOA_END_MAX - 1);
+    }
+    else if (strcasecmp(campo, "data_nascimento") == 0) {
+        strncpy(p->data.data_nascimento, valor, PESSOA_DATA_MAX - 1);
+    }
+    
     return 0;
 }
 

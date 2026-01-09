@@ -27,7 +27,7 @@ void liberar_tipo_pet_lista(tipo_pet_lista *lista);
 
 int criar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados);
 tipo_pet_no* buscar_tipo_pet(tipo_pet_lista *lista, int codigo);
-int atualizar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados);
+int atualizar_tipo_pet(tipo_pet_lista *lista, int id, char *campo, char *valor);
 int remover_tipo_pet(tipo_pet_lista *lista, int codigo);
 
 int tipo_pet_carregar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo);

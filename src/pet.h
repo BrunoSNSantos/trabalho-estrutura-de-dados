@@ -37,7 +37,7 @@ void liberar_pet_lista(pet_lista *lista);
 int criar_pet(pet_lista *lista,pessoa_lista *pessoa_lista,tipo_pet_lista *tipo_pet_lista, pet_dados data);
 pet_no* buscar_pet(pet_lista *lista, int codigo);
 int remover_pet(pet_lista *lista, int codigo);
-int atualizar_pet(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, pet_dados data);
+int atualizar_pet(pet_lista *lista, pessoa_lista *pl, tipo_pet_lista *tl, int id, char *campo, char *valor);
 int pet_existe_dono(pet_lista *lista, int id_pessoa);
 int pet_carregar_arquivo(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, const char *nome_arquivo);
 int pet_salvar_arquivo(pet_lista *lista, const char *nome_arquivo);

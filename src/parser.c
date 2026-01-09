@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include "parser.h" 
 
-
 void limpar_string(char *str) {
     char *src = str, *dst = str;
     while (*src) {
@@ -25,6 +24,18 @@ void limpar_coluna(char *str) {
         src++;
     }
     *dst = '\0';
+}
+
+void reparar_token(char *token_inicial, char *destino) {
+    strcpy(destino, token_inicial);
+    if (token_inicial[0] == '\'' && token_inicial[strlen(token_inicial)-1] != '\'') {
+        char *proximo;
+        while ((proximo = strtok(NULL, " "))) {
+            strcat(destino, " ");
+            strcat(destino, proximo);
+            if (proximo[strlen(proximo)-1] == '\'') break;
+        }
+    }
 }
 
 void ler_linha(char *linha, Fila *f) {
@@ -59,9 +70,7 @@ void ler_linha(char *linha, Fila *f) {
         int qtd = 0;
 
         while ((token = strtok(NULL, " ,()")) != NULL && qtd < 6) {
-            
             if (strcasecmp(token, "values") == 0) break; 
-            
             strcpy(temp_cols[qtd], token);
             qtd++;
         }
@@ -95,6 +104,7 @@ void ler_linha(char *linha, Fila *f) {
             if (index != -1) strcpy(cmd.valores[index], val);
         }
         cmd.qtd_params = 4;
+
     } else if (cmd.operacao == OP_DELETE) {
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
         
@@ -107,6 +117,7 @@ void ler_linha(char *linha, Fila *f) {
             strcpy(cmd.valores[0], token);
             cmd.qtd_params = 1;
         }
+
     } else if (cmd.operacao == OP_SELECT) {
         cmd.tem_order_by = 0;
         cmd.qtd_params = 0;
@@ -129,14 +140,27 @@ void ler_linha(char *linha, Fila *f) {
             }
             token = strtok(NULL, " ");
         }
+
     } else if (cmd.operacao == OP_UPDATE) {
         while (token && strcasecmp(token, "set") != 0) token = strtok(NULL, " ");
         if ((token = strtok(NULL, " ="))) strcpy(cmd.campos[0], token);
-        if ((token = strtok(NULL, " ="))) { limpar_string(token); strcpy(cmd.valores[0], token); }
+        
+        if ((token = strtok(NULL, " ="))) { 
+            char buffer_reparado[100];
+            reparar_token(token, buffer_reparado);
+            limpar_string(buffer_reparado); 
+            strcpy(cmd.valores[0], buffer_reparado); 
+        }
 
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
         if ((token = strtok(NULL, " =;"))) strcpy(cmd.campos[1], token);
-        if ((token = strtok(NULL, " =;"))) { limpar_string(token); strcpy(cmd.valores[1], token); }
+        
+        if ((token = strtok(NULL, " =;"))) { 
+            char buffer_reparado[100];
+            reparar_token(token, buffer_reparado);
+            limpar_string(buffer_reparado); 
+            strcpy(cmd.valores[1], buffer_reparado); 
+        }
         
         cmd.qtd_params = 2;
     }

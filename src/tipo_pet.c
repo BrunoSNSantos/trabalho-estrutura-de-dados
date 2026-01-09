@@ -64,11 +64,13 @@ tipo_pet_no* buscar_tipo_pet(tipo_pet_lista *lista, int codigo) {
     return NULL;
 }
 
-int atualizar_tipo_pet(tipo_pet_lista *lista, tipo_pet_dados dados) {
-    tipo_pet_no *n = buscar_tipo_pet(lista, dados.codigo);
-    if (!n) return -1;
-    n->data = dados;
+int atualizar_tipo_pet(tipo_pet_lista *lista, int id, char *campo, char *valor) {
+    tipo_pet_no *t = buscar_tipo_pet(lista, id);
+    if (!t) return -1;
 
+    if (strcasecmp(campo, "descricao") == 0) {
+        strncpy(t->data.descricao, valor, TIPO_PET_DESC - 1);
+    }
     return 0;
 }
 

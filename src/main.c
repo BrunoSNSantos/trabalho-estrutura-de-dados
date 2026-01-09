@@ -115,8 +115,8 @@ int main() {
         }
     }
 
-    // 3º TURNO: Ações Críticas (SELECT e DELETE)
-    printf("\n--- Turno 3: Relatorios e Remocoes ---\n");
+    // 3º TURNO: Ações Críticas (SELECT, DELETE e UPDATE)
+    printf("\n--- Turno 3: Relatorios e Acoes Criticas ---\n");
     while(!filaVazia(&fila_pessoa_restante)) {
         Comando cmd = remover(&fila_pessoa_restante);
         
@@ -125,15 +125,49 @@ int main() {
         } 
         else if(cmd.operacao == OP_DELETE) {
             int id = atoi(cmd.valores[0]);
+            
+            // Validação de Integridade: Impede remover dono com pets
             if(pet_existe_dono(lista_pets, id)) {
                 printf("[ERRO] Pessoa %d possui Pets e nao pode ser removida.\n", id);
             } else {
-                if(remover_pessoa(lista_pessoas, id) == 0) printf("[OK] Pessoa %d removida.\n", id);
+                if(remover_pessoa(lista_pessoas, id) == 0) 
+                    printf("[OK] Pessoa %d removida.\n", id);
+                else 
+                    printf("[ERRO] Falha ao remover Pessoa %d.\n", id);
+            }
+        }
+        else if (cmd.operacao == OP_UPDATE) {
+            // Lógica do Parser: 
+            // valores[1] = ID do WHERE (quem alterar)
+            // campos[0]  = Nome do campo (o que alterar)
+            // valores[0] = Novo valor
+            
+            int id_alvo = atoi(cmd.valores[1]); 
+            char *campo = cmd.campos[0];
+            char *valor = cmd.valores[0];
+
+            if (cmd.tabela == TAB_PESSOA) {
+                if (atualizar_pessoa(lista_pessoas, id_alvo, campo, valor) == 0)
+                    printf("[OK] Pessoa %d atualizada (%s -> %s).\n", id_alvo, campo, valor);
+                else 
+                    printf("[ERRO] Falha ao atualizar Pessoa %d.\n", id_alvo);
+            }
+            else if (cmd.tabela == TAB_PET) {
+                // Passa as listas auxiliares para o atualizar_pet validar Dono/Tipo
+                int res = atualizar_pet(lista_pets, lista_pessoas, lista_tipos, id_alvo, campo, valor);
+                
+                if (res == 0) printf("[OK] Pet %d atualizado (%s -> %s).\n", id_alvo, campo, valor);
+                else if (res == -2) printf("[ERRO] Update Pet %d falhou: Novo Dono %s nao existe.\n", id_alvo, valor);
+                else if (res == -3) printf("[ERRO] Update Pet %d falhou: Novo Tipo %s nao existe.\n", id_alvo, valor);
+                else printf("[ERRO] Falha ao atualizar Pet %d.\n", id_alvo);
+            }
+            else if (cmd.tabela == TAB_TIPO_PET) {
+                if (atualizar_tipo_pet(lista_tipos, id_alvo, campo, valor) == 0)
+                    printf("[OK] Tipo %d atualizado.\n", id_alvo);
             }
         }
     }
 
-    // 8. Salvar e Sair
     printf("\nSalvando arquivos...\n");
     pessoa_salvar_arquivo(lista_pessoas, "pessoas.txt");
     pet_salvar_arquivo(lista_pets, "pets.txt");

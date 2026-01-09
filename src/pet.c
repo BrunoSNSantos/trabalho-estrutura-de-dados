@@ -78,15 +78,23 @@ int remover_pet(pet_lista *lista, int codigo){
     return 0;
 }
 
-int atualizar_pet(pet_lista *lista, pessoa_lista *pessoa_lista, tipo_pet_lista *tipo_pet_lista, pet_dados data) {
-    pet_no *n = buscar_pet(lista, data.codigo);
-    if(!n) return -1;
+int atualizar_pet(pet_lista *lista, pessoa_lista *pl, tipo_pet_lista *tl, int id, char *campo, char *valor) {
+    pet_no *p = buscar_pet(lista, id);
+    if (!p) return -1;
 
-    if (!buscar_pessoa(pessoa_lista, data.codigo_pessoa)) return -2;
-
-    if (!buscar_tipo_pet(tipo_pet_lista, data.codigo_tipo)) return -3;
-
-    n->data = data;
+    if (strcasecmp(campo, "nome") == 0) {
+        strncpy(p->data.nome, valor, PET_NAME_MAX - 1);
+    }
+    else if (strcasecmp(campo, "codigo_pes") == 0 || strcasecmp(campo, "codigo_cli") == 0) {
+        int novo_dono = atoi(valor);
+        if (buscar_pessoa(pl, novo_dono) == NULL) return -2;
+        p->data.codigo_pessoa = novo_dono;
+    }
+    else if (strcasecmp(campo, "codigo_tipo") == 0) {
+        int novo_tipo = atoi(valor);
+        if (buscar_tipo_pet(tl, novo_tipo) == NULL) return -3;
+        p->data.codigo_tipo = novo_tipo;
+    }
     return 0;
 }
 
