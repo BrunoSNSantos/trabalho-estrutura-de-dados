@@ -48,3 +48,10 @@ Comando remover(Fila *f) {
     free(aux);
     return backup;
 }
+
+Comando* consultar_inicio(Fila *f) {
+    if (filaVazia(f)) {
+        return NULL;
+    }
+    return &f->cabeca->info;
+}

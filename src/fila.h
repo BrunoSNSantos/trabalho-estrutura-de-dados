@@ -18,6 +18,7 @@ typedef struct {
     char valores[5][50];
     int qtd_params;
     int tem_order_by;
+    int id_sequencial;
 } Comando;
 
 typedef struct No {
@@ -33,6 +34,7 @@ typedef struct {
 int filaVazia (Fila *f);
 void iniciarFila(Fila *f);
 int adicionar(Fila *f, Comando c);
+Comando* consultar_inicio(Fila *f);
 Comando remover(Fila *f);
 
 #endif

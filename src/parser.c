@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "parser.h" 
 
+static int contador_global_comandos = 0;
+
 void limpar_string(char *str) {
     char *src = str, *dst = str;
     while (*src) {
@@ -167,6 +169,7 @@ void ler_linha(char *linha, Fila *f) {
         
         cmd.qtd_params = 2;
     }
+    cmd.id_sequencial = ++contador_global_comandos;
     adicionar(f, cmd);
 }
 
