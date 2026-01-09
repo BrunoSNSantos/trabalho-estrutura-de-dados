@@ -6,7 +6,7 @@
 
 typedef struct tipo_pet_dados{
     int codigo;
-    char descricao[TIPO_PET_DESC];
+    char nome[TIPO_PET_DESC];
 } tipo_pet_dados;
 
 typedef struct tipo_pet_no {

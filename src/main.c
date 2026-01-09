@@ -22,6 +22,11 @@ int main() {
     iniciarFila(&fila_geral);
     processar_arquivo("script.txt", &fila_geral); 
 
+    Fila fila_pessoa, fila_pet, fila_tipo;
+    iniciarFila(&fila_pessoa);
+    iniciarFila(&fila_pet);
+    iniciarFila(&fila_tipo);
+
     printf("\n--- Processando Script ---\n");
 
     while(!filaVazia(&fila_geral)) {
@@ -29,9 +34,15 @@ int main() {
 
         if (cmd.tabela == TAB_TIPO_PET) {
             if (cmd.operacao == OP_INSERT) {
+                if(strlen(cmd.valores[0]) == 0 || strlen(cmd.valores[1]) == 0) {
+                     printf("[ERRO] Tipo Pet NAO criado: Codigo e Nome sao obrigatorios.\n");
+                     continue;
+                }
+                
                 tipo_pet_dados d;
                 d.codigo = atoi(cmd.valores[0]);
-                strcpy(d.descricao, cmd.valores[1]);
+                strcpy(d.nome, cmd.valores[1]);
+                
                 if (criar_tipo_pet(lista_tipos, d) == 0)
                     printf("[OK] Tipo %d criado.\n", d.codigo);
                 else
@@ -44,26 +55,44 @@ int main() {
                 else
                     printf("[ERRO] Falha update Tipo %d.\n", id);
             }
+            else if (cmd.operacao == OP_DELETE) {
+                int id = atoi(cmd.valores[0]);
+                printf("[OK] Tipo %d removido (simulacao).\n", id);
+            }
         }
-
 
         else if (cmd.tabela == TAB_PESSOA) {
             if (cmd.operacao == OP_INSERT) {
+                if(strlen(cmd.valores[0]) == 0 || strlen(cmd.valores[1]) == 0) {
+                    printf("[ERRO] Pessoa NAO criada: Codigo e Nome sao obrigatorios.\n");
+                    continue;
+                }
+
                 pessoa_dados d;
                 d.codigo = atoi(cmd.valores[0]);
                 strcpy(d.nome, cmd.valores[1]);
-                strcpy(d.fone, cmd.valores[2]);
-                if(cmd.qtd_params > 3) strcpy(d.endereco, cmd.valores[3]);
-                if(cmd.qtd_params > 4) strcpy(d.data_nascimento, cmd.valores[4]);
                 
-                if(criar_pessoa(lista_pessoas, d) == 0) 
-                    printf("[OK] Pessoa %d criada.\n", d.codigo);
-                else
-                    printf("[ERRO] Pessoa %d ja existe.\n", d.codigo);
+                if(strlen(cmd.valores[2]) > 0) strcpy(d.fone, cmd.valores[2]);
+                else strcpy(d.fone, "");
+
+                if(cmd.qtd_params > 3 && strlen(cmd.valores[3]) > 0) 
+                    strcpy(d.endereco, cmd.valores[3]);
+                else strcpy(d.endereco, "");
+                
+                if(cmd.qtd_params <= 4 || strlen(cmd.valores[4]) == 0) {
+                    printf("[ERRO] Pessoa %d NAO criada. Data de Nascimento eh obrigatoria.\n", d.codigo);
+                } 
+                else {
+                    strcpy(d.data_nascimento, cmd.valores[4]);
+                    
+                    if(criar_pessoa(lista_pessoas, d) == 0) 
+                        printf("[OK] Pessoa %d criada.\n", d.codigo);
+                    else
+                        printf("[ERRO] Pessoa %d ja existe.\n", d.codigo);
+                }
             }
             else if (cmd.operacao == OP_DELETE) {
                 int id = atoi(cmd.valores[0]);
-
                 if(pet_existe_dono(lista_pets, id)) {
                     printf("[ERRO] Pessoa %d possui Pets e nao pode ser removida.\n", id);
                 } else {
@@ -87,6 +116,12 @@ int main() {
 
         else if (cmd.tabela == TAB_PET) {
             if (cmd.operacao == OP_INSERT) {
+                if(strlen(cmd.valores[0]) == 0 || strlen(cmd.valores[1]) == 0 || 
+                   strlen(cmd.valores[2]) == 0 || strlen(cmd.valores[3]) == 0) {
+                    printf("[ERRO] Pet NAO criado: Todos os campos sao obrigatorios.\n");
+                    continue;
+                }
+
                 pet_dados d;
                 d.codigo = atoi(cmd.valores[0]);
                 d.codigo_pessoa = atoi(cmd.valores[1]);
@@ -126,7 +161,7 @@ int main() {
     liberar_pessoa_lista(lista_pessoas);
     liberar_pet_lista(lista_pets);
     liberar_tipo_pet_lista(lista_tipos);
-    printf("\n=== SISTEMA FINALIZADO ===\n");
     
+    printf("\n=== SISTEMA FINALIZADO ===\n");
     return 0;
 }

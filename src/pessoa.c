@@ -159,8 +159,12 @@ int pessoa_salvar_arquivo(pessoa_lista *lista, const char *nome_arquivo) {
 
 void pessoa_imprimir_callback(void *dado) {
     pessoa_no *p = (pessoa_no*)dado;
-    printf(" -> ID: %d | Nome: %s | Fone: %s\n", 
-           p->data.codigo, p->data.nome, p->data.fone);
+    printf(" -> ID: %d | Nome: %s | Fone: %s | Nasc: %s | End: %s\n", 
+           p->data.codigo, 
+           p->data.nome, 
+           p->data.fone,
+           p->data.data_nascimento,
+           p->data.endereco);
 }
 
 void pessoa_gerar_relatorio_ordenado(pessoa_lista *lista) {

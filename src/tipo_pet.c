@@ -68,8 +68,9 @@ int atualizar_tipo_pet(tipo_pet_lista *lista, int id, char *campo, char *valor) 
     tipo_pet_no *t = buscar_tipo_pet(lista, id);
     if (!t) return -1;
 
-    if (strcasecmp(campo, "descricao") == 0) {
-        strncpy(t->data.descricao, valor, TIPO_PET_DESC - 1);
+    if (strcasecmp(campo, "nome") == 0 || strcasecmp(campo, "descricao") == 0) {
+        strncpy(t->data.nome, valor, 49);
+        t->data.nome[49] = '\0';
     }
     return 0;
 }
@@ -107,7 +108,10 @@ int tipo_pet_carregar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
         d.codigo = atoi(tok);
 
         tok = strtok(NULL, ";");
-        if (tok) strncpy(d.descricao, tok, TIPO_PET_DESC-1);
+        if (tok) {
+            strncpy(d.nome, tok, 49);
+            d.nome[49] = '\0';
+        }
 
         criar_tipo_pet(lista, d);
     }
@@ -126,7 +130,7 @@ int tipo_pet_salvar_arquivo(tipo_pet_lista *lista, const char *nome_arquivo) {
     while (auxp) {
         fprintf(f, "%d;%s\n", 
         auxp->data.codigo,
-        auxp->data.descricao);
+        auxp->data.nome);
     auxp = auxp->prox;
     }
 

@@ -74,6 +74,8 @@ void ler_linha(char *linha, Fila *f) {
             i++;
         }
 
+        int max_index = 0;
+
         for (int k = 0; k < qtd; k++) {
             char *col = temp_cols[k];
             char *val = temp_vals[k];
@@ -92,11 +94,19 @@ void ler_linha(char *linha, Fila *f) {
                 else if (strcasecmp(col, "codigo_tipo") == 0) index = 3;
             } else if (cmd.tabela == TAB_TIPO_PET) {
                 if (strcasecmp(col, "codigo") == 0) index = 0;
-                else if (strcasecmp(col, "descricao") == 0) index = 1;
+                else if (strcasecmp(col, "nome") == 0 || strcasecmp(col, "descricao") == 0) index = 1;
             }
-            if (index != -1) strcpy(cmd.valores[index], val);
+            
+            if (index != -1) {
+                strcpy(cmd.valores[index], val);
+                if (index > max_index) max_index = index;
+            }
         }
-        cmd.qtd_params = 4; 
+
+        cmd.qtd_params = max_index + 1;
+
+        if (cmd.tabela == TAB_PESSOA && cmd.qtd_params < 5) cmd.qtd_params = 5;
+        else if (cmd.tabela == TAB_PET && cmd.qtd_params < 4) cmd.qtd_params = 4;
 
     } else if (cmd.operacao == OP_DELETE) {
         while (token && strcasecmp(token, "where") != 0) token = strtok(NULL, " ");
@@ -171,7 +181,6 @@ void processar_arquivo(char *nome_arquivo, Fila *f) {
     char linha[200];
     while(fgets(linha, sizeof(linha), arq)) {
         linha[strcspn(linha, "\r\n")] = 0;
-        
         if(strlen(linha) > 2) {
             ler_linha(linha, f);
         }
